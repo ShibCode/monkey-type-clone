@@ -65,7 +65,7 @@ const Home = () => {
 
   useEffect(() => {
     onLoad(setColorsLoaded);
-    setIsLoaded(true);
+    setTimeout(() => setIsLoaded(true), 1000);
   }, []);
 
   const changeMode = (mode) => {

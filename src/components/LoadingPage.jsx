@@ -1,11 +1,16 @@
 "use client";
 
 import Logo from "@/svg component/Logo";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Spinner from "./Spinner";
 
 const LoadingPage = ({ colorsLoaded }) => {
-  const theme = localStorage.getItem("theme");
+  const [theme, setTheme] = useState(false);
+
+  useEffect(() => {
+    const theme = localStorage.getItem("theme");
+    if (theme) setTheme(true);
+  }, []);
 
   return (
     <div className="bg-bgColor absolute inset-0 z-30">

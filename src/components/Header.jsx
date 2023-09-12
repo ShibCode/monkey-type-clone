@@ -88,7 +88,7 @@ const Header = () => {
             testStarted ? "opacity-0" : "opacity-100"
           }`}
         >
-          {user.username ? (
+          {user?.username ? (
             <>
               <Link
                 tabIndex={-1}

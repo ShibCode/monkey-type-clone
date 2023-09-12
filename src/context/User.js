@@ -1,14 +1,16 @@
 "use client";
 
-import { useState, createContext } from "react";
+import { useState, createContext, useEffect } from "react";
 
 export const UserContext = createContext();
 
 const User = ({ children }) => {
-  const [user, setUser] = useState(() => {
+  const [user, setUser] = useState({});
+
+  useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
-    return user ? user : {};
-  });
+    if (user) setUser(user);
+  }, []);
 
   const updateUser = (newUser) => {
     setUser(newUser);
