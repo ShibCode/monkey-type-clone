@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --primary-color: #616161;
+    --secondary-color: #f66e0d;
+    --tertiary-color: #f5e6c8;
+    --bg-color: #313131;
+    --bg-secondary-color: #2b2b2b;
+    --error-color: #e72d2d;
+    --extra-color: #7e2a33;
+    --max-col: auto-fill;
+    --min-item-size: 250px;
+  }
+}
+
+@layer utilities {
+  .wrapper {
+    @apply w-full flex justify-center;
+  }
+  .contain {
+    @apply max-w-[1200px] w-[90%] flex;
+  }
+  .headerIcon {
+    @apply text-primary hover:text-tertiary cursor-pointer transition-colors duration-75;
+  }
+  .settings-section {
+    @apply flex flex-col gap-6 w-full overflow-hidden;
+  }
+}
+
+@media (min-width: 905px) {
+  :root {
+    --max-col: 3;
+  }
+}
