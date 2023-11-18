@@ -130,9 +130,7 @@ const Result = ({
   }
 
   function saveTest(testData) {
-    post("/save-test", { email: user.email, testData }).then((res) =>
-      console.log(res)
-    );
+    post("/save-test", { email: user.email, testData });
   }
 
   function handleKeyDown(e) {

@@ -24,8 +24,10 @@ const Home = () => {
 
   const [wpmEachSecond, setWpmEachSecond] = useState([]);
   const [rawWpmEachSecond, setRawWpmEachSecond] = useState([]);
-  const [errorsEachSecond, setErrorsEachSecond] = useState([4, 6, 0, 1]);
-
+  const [errorsEachSecond, setErrorsEachSecond] = useState([]);
+  useEffect(() => {
+    console.log(errorsEachSecond);
+  }, [errorsEachSecond]);
   const [isCompleted, setIsCompleted] = useState(false);
 
   const [isLoaded, setIsLoaded] = useState(false);
@@ -39,6 +41,7 @@ const Home = () => {
   const restart = () => {
     setWpmEachSecond([]);
     setRawWpmEachSecond([]);
+    setErrorsEachSecond([]);
     setResult({});
     setIsCompleted(false);
   };
@@ -57,9 +60,10 @@ const Home = () => {
       setMenuSeed(Math.random());
       setWpmEachSecond([]);
       setRawWpmEachSecond([]);
+      setErrorsEachSecond([]);
       setResult({});
       setTestStarted(false);
-      if (isCompleted) setIsCompleted(false);
+      setIsCompleted(false);
     }, TEST_RESTART_ANIMATION_DURATION);
   };
 

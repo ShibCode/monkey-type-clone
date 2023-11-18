@@ -31,6 +31,7 @@ export async function POST(req, res) {
   try {
     await dbConnect();
     const query = await req.json();
+
     const user = await User.findOne(query); // getting user data from db
 
     const { testHistory } = user;

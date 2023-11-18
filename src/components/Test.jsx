@@ -188,6 +188,28 @@ const Test = ({
     }
   };
 
+  useUpdateEffect(() => {
+    const lastWord = typedWords[typedWords.length - 1];
+    const typedLetter = lastWord[lastWord.length - 1];
+
+    const actualWord = words[typedWords.length - 1];
+    const actualLetter = actualWord[lastWord.length - 1];
+
+    if (typedLetter !== actualLetter) {
+      setErrorsEachSecond((prev) => {
+        if (seconds === prev.length) return [...prev, 1];
+        else if (seconds > prev.length) {
+          return [...prev, ...new Array(seconds - 1 - prev.length).fill(0), 1];
+        }
+
+        return [
+          ...prev.slice(0, prev.length - 1), // gets all elements except last
+          (prev[prev.length - 1] += 1), // adds last element after adding 1
+        ];
+      });
+    }
+  }, [typedWords]);
+
   useEffect(() => {
     if (typedWords.length !== 0 && time === 0) setTestStarted(true);
     else if (
@@ -225,7 +247,7 @@ const Test = ({
   return (
     <>
       <div
-        className={`text-secondary mb-2 text-2xl flex gap-8 opacity-0 transition-all ${
+        className={`text-secondary mb-2 text-2xl flex gap-8 opacity-0  transition-all ${
           time !== 0 && "opacity-100"
         }`}
       >
@@ -243,8 +265,8 @@ const Test = ({
         id="test"
       >
         <div
-          className={`w-0.5 h-8 bg-secondary absolute transition-all duration-100 ${
-            typedWords.length === 0 && time === 0 ? "animate-blink" : ""
+          className={`w-0.5 h-8 bg-secondary absolute transition-all ease-linear duration-100 ${
+            time === 0 && "animate-blink"
           }`}
           style={{
             top: caretPosition.top,
