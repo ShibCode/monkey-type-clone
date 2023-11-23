@@ -25,9 +25,7 @@ const Home = () => {
   const [wpmEachSecond, setWpmEachSecond] = useState([]);
   const [rawWpmEachSecond, setRawWpmEachSecond] = useState([]);
   const [errorsEachSecond, setErrorsEachSecond] = useState([]);
-  useEffect(() => {
-    console.log(errorsEachSecond);
-  }, [errorsEachSecond]);
+
   const [isCompleted, setIsCompleted] = useState(false);
 
   const [isLoaded, setIsLoaded] = useState(false);
@@ -44,6 +42,7 @@ const Home = () => {
     setErrorsEachSecond([]);
     setResult({});
     setIsCompleted(false);
+    setTestStarted(false);
   };
 
   const duringTestRestart = () => {

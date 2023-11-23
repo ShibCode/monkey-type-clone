@@ -1,5 +1,7 @@
 import { User } from "@/model/user";
 import dbConnect from "@/utils/dbConn";
+import getDate from "@/utils/getDate";
+import getTime from "@/utils/getTime";
 import { NextResponse } from "next/server";
 
 export async function POST(req, res) {
@@ -8,9 +10,15 @@ export async function POST(req, res) {
 
     const { email, testData } = await req.json();
 
+    const extendedTestData = {
+      ...testData,
+      date: getDate(),
+      time: getTime(),
+    };
+
     await User.updateOne(
       { email },
-      { $push: { testHistory: { $each: [testData], $position: 0 } } }
+      { $push: { testHistory: { $each: [extendedTestData], $position: 0 } } }
     );
 
     return NextResponse.json({

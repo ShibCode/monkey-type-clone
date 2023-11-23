@@ -2,8 +2,6 @@ import { useContext, useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
 import { Chart as ChartJS } from "chart.js/auto";
 import calculateWpm from "@/utils/calulateWpm";
-import getDate from "@/utils/getDate";
-import getTime from "@/utils/getTime";
 import { post } from "@/utils/post";
 import { UserContext } from "@/context/User";
 import getColor from "@/utils/getColor";
@@ -22,36 +20,58 @@ const Result = ({
   restart,
 }) => {
   const { user } = useContext(UserContext);
-  const { setTestStarted } = useContext(TestStartedContext);
 
-  const [stats, setStats] = useState({ wpm: 0, accuracy: 0, raw: 0 });
+  const { correct, incorrect, missed, extra, timeTaken } = result;
+
+  const stats = {
+    wpm: calculateWpm(correct, timeTaken),
+    raw: calculateWpm(correct + incorrect, timeTaken),
+    accuracy: parseFloat(
+      (correct / (incorrect + missed + correct + extra)) * 100
+    ).toFixed(2),
+  };
+
+  const testData = {
+    ...stats,
+    ...result,
+    mode: {
+      name: mode,
+      category: modeCategory,
+    },
+  };
+
   const [tabIndex, setTabIndex] = useState(0);
 
   const chartData = {
-    labels: wpmEachSecond.map((_, i) => i + 1),
+    labels:
+      timeTaken > Math.floor(timeTaken)
+        ? [...wpmEachSecond.map((_, i) => i + 1), +timeTaken]
+        : wpmEachSecond.map((_, i) => i + 1),
     datasets: [
       {
         type: "line",
         label: "wpm",
-        data: wpmEachSecond,
-        backgroundColor: () => getColor("secondary"),
+        data: [...wpmEachSecond, stats.wpm],
+        backgroundColor: "#00000025",
         borderColor: () => getColor("secondary"),
+        pointBackgroundColor: () => getColor("secondary"),
+        fill: true,
         yAxisID: "y",
       },
       {
         type: "line",
         label: "raw",
-        data: rawWpmEachSecond,
-        backgroundColor: () => getColor("primary"),
+        data: [...rawWpmEachSecond, stats.raw],
+        backgroundColor: "#00000020",
         borderColor: () => getColor("primary"),
+        pointBackgroundColor: () => getColor("primary"),
+        fill: true,
         yAxisID: "y",
       },
       {
         type: "scatter",
         label: "errors",
-        data: errorsEachSecond.map((errors, index) => {
-          return errors !== 0 ? { x: index + 1, y: errors } : "";
-        }),
+        data: errorsEachSecond,
         backgroundColor: () => getColor("error"),
         borderColor: () => getColor("error"),
         pointRadius: 3,
@@ -117,18 +137,6 @@ const Result = ({
     return i / 4;
   }
 
-  function calculateResult() {
-    const { correct, extra, incorrect, missed, timeTaken } = result;
-
-    const wpm = calculateWpm(correct, timeTaken);
-    const raw = calculateWpm(correct + incorrect, timeTaken);
-    const accuracy = parseFloat(
-      (correct / (incorrect + missed + correct + extra)) * 100
-    ).toFixed(2);
-
-    setStats({ wpm, accuracy, raw });
-  }
-
   function saveTest(testData) {
     post("/save-test", { email: user.email, testData });
   }
@@ -148,27 +156,10 @@ const Result = ({
   }
 
   useEffect(() => {
+    saveTest(testData);
     document.addEventListener("keydown", handleKeyDown);
-    calculateResult();
-    setTestStarted(false);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
-
-  useEffect(() => {
-    if (stats.raw !== 0 && Object.keys(user).length !== 0) {
-      const testData = {
-        ...stats,
-        ...result,
-        mode: {
-          name: mode,
-          category: modeCategory,
-        },
-        date: getDate(),
-        time: getTime(),
-      };
-      saveTest(testData);
-    }
-  }, [stats]);
 
   return (
     <div className="absolute inset-0 z-10 mt-[55px] bg-bgColor wrapper">
@@ -206,13 +197,12 @@ const Result = ({
             <div>
               <h2 className="text-primary">character</h2>
               <p className="text-secondary text-3xl">
-                {result.correct}/{result.incorrect}/{result.extra}/
-                {result.missed}
+                {correct}/{incorrect}/{extra}/{missed}
               </p>
             </div>
             <div>
               <h2 className="text-primary">time</h2>
-              <p className="text-secondary text-3xl">{result.timeTaken}s</p>
+              <p className="text-secondary text-3xl">{timeTaken}s</p>
             </div>
           </div>
         </div>

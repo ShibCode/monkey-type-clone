@@ -197,9 +197,12 @@ const Test = ({
 
     if (typedLetter !== actualLetter) {
       setErrorsEachSecond((prev) => {
-        if (seconds === prev.length) return [...prev, 1];
-        else if (seconds > prev.length) {
-          return [...prev, ...new Array(seconds - 1 - prev.length).fill(0), 1];
+        if (seconds >= prev.length) {
+          return [
+            ...prev,
+            ...new Array(seconds - prev.length).fill(undefined),
+            1,
+          ];
         }
 
         return [
@@ -221,6 +224,7 @@ const Test = ({
     ) {
       getResult(true);
       setIsCompleted(true);
+      setTestStarted(false);
     }
   }, [position]);
 
@@ -325,7 +329,7 @@ const Test = ({
           );
         })}
       </div>
-      <div className="flex justify-center">
+      <div className="flex justify-center my-4">
         <button
           onClick={restart}
           disabled={isCompleted}
