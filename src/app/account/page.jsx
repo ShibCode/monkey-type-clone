@@ -29,7 +29,7 @@ const Account = () => {
   useEffect(() => {
     onLoad(setColorsLoaded);
 
-    const user = JSON.parse(localStorage.getItem("user"));
+    const user = JSON.parse(localStorage.getItem("monkey-type-clone-user"));
 
     if (!user) router.push("/");
     else {

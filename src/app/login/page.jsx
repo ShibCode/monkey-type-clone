@@ -15,7 +15,7 @@ const Login = () => {
   useEffect(() => {
     onLoad(setColorsLoaded);
 
-    if (localStorage.getItem("user")) router.push("/");
+    if (localStorage.getItem("monkey-type-clone-user")) router.push("/");
     else setIsLoaded(true);
   }, []);
 

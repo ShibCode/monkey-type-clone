@@ -156,7 +156,8 @@ const Result = ({
   }
 
   useEffect(() => {
-    saveTest(testData);
+    if (user.email) saveTest(testData);
+
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);

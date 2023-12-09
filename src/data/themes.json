@@ -1,0 +1,218 @@
+{
+  "carbon": {
+    "primary": "#616161",
+    "secondary": "#f66e0d",
+    "tertiary": "#f5e6c8",
+    "bg": "#313131",
+    "bgSecondary": "#2b2b2b",
+    "error": "#e72d2d",
+    "extra": "#7e2a33"
+  },
+  "ishtar": {
+    "primary": "#847869",
+    "secondary": "#91170c",
+    "tertiary": "#fae1c3",
+    "bg": "#202020",
+    "bgSecondary": "#272727",
+    "error": "#bb1e10",
+    "extra": "#791717"
+  },
+  "dracula": {
+    "primary": "#6272a4",
+    "secondary": "#bd93f9",
+    "tertiary": "#f8f8f2",
+    "bg": "#282a36",
+    "bgSecondary": "#20222c",
+    "error": "#f55",
+    "extra": "#f1fa8c"
+  },
+  "matrix": {
+    "primary": "#006500",
+    "secondary": "#15ff00",
+    "tertiary": "#d1ffcd",
+    "bg": "#000",
+    "bgSecondary": "#032000",
+    "error": "#da3333",
+    "extra": "#791717"
+  },
+  "grape": {
+    "primary": "#6e225e",
+    "secondary": "#ff8f00",
+    "tertiary": "#fff",
+    "bg": "#2c003e",
+    "bgSecondary": "#1f002d",
+    "error": "#ff4081",
+    "extra": "#bf2054"
+  },
+  "blue dolphin": {
+    "primary": "#00e4ff",
+    "secondary": "#ffcefb",
+    "tertiary": "#82eaff",
+    "bg": "#003950",
+    "bgSecondary": "#014961",
+    "error": "#ffbde6",
+    "extra": "#ff8188"
+  },
+  "vscode": {
+    "primary": "#4d4d4d",
+    "secondary": "#007acc",
+    "tertiary": "#d4d4d4",
+    "bg": "#1e1e1e",
+    "bgSecondary": "#191919",
+    "error": "#f44747",
+    "extra": "#f44747"
+  },
+  "voc": {
+    "primary": "#4c1e48",
+    "secondary": "#e0caac",
+    "tertiary": "#eeeae4",
+    "bg": "#190618",
+    "bgSecondary": "#2c0c28",
+    "error": "#af3735",
+    "extra": "#7e2a29"
+  },
+  "watermelon": {
+    "primary": "#3e7a65",
+    "secondary": "#d6686f",
+    "tertiary": "#cdc6bc",
+    "bg": "#1f4437",
+    "bgSecondary": "#244d3f",
+    "error": "#c82931",
+    "extra": "#ac1823"
+  },
+  "wavez": {
+    "primary": "#1f5e6b",
+    "secondary": "#6bde3b",
+    "tertiary": "#e9efe6",
+    "bg": "#1c292f",
+    "bgSecondary": "#1b3238",
+    "error": "#ca4754",
+    "extra": "#7e2a33"
+  },
+  "witch girl": {
+    "primary": "#ddb4a7",
+    "secondary": "#56786a",
+    "tertiary": "#56786a",
+    "bg": "#f3dbda",
+    "bgSecondary": "#e7c8be",
+    "error": "#b29a91",
+    "extra": "#b29a91"
+  },
+  "tron orange": {
+    "primary": "#ff6600",
+    "secondary": "#f0e800",
+    "tertiary": "#ffffff",
+    "bg": "#0d1c1c",
+    "bgSecondary": "#9c9191",
+    "error": "#ff0000",
+    "extra": "#ff0000"
+  },
+  "viridescent": {
+    "primary": "#84a98c",
+    "secondary": "#95d5b2",
+    "tertiary": "#e9f5db",
+    "bg": "#2c3333",
+    "bgSecondary": "#232828",
+    "error": "#ff4646",
+    "extra": "#ab2f2f"
+  },
+  "tiramisu": {
+    "primary": "#c0976f",
+    "secondary": "#c0976f",
+    "tertiary": "#7d5448",
+    "bg": "#cfc6b9",
+    "bgSecondary": "#d0bca7",
+    "error": "#e9632d",
+    "extra": "#e9632d"
+  },
+  "terror below": {
+    "primary": "#015c53",
+    "secondary": "#66ac92",
+    "tertiary": "#dceae5",
+    "bg": "#0b1e1a",
+    "bgSecondary": "#041715",
+    "error": "#bf616a",
+    "extra": "#793e44"
+  },
+  "terminal": {
+    "primary": "#48494b",
+    "secondary": "#79a617",
+    "tertiary": "#e7eae0",
+    "bg": "#191a1b",
+    "bgSecondary": "#141516",
+    "error": "#a61717",
+    "extra": "#731010"
+  },
+  "terra": {
+    "primary": "#436029",
+    "secondary": "#89c559",
+    "tertiary": "#f0edd1",
+    "bg": "#0c100e",
+    "bgSecondary": "#0f1d18",
+    "error": "#d3ca78",
+    "extra": "#89844d"
+  },
+  "sweden": {
+    "primary": "#57abdb",
+    "secondary": "#ffcc02",
+    "tertiary": "#ffffff",
+    "bg": "#0058a3",
+    "bgSecondary": "#024f8e",
+    "error": "#e74040",
+    "extra": "#a22f2f"
+  },
+  "superuser": {
+    "primary": "#526777",
+    "secondary": "#43ffaf",
+    "tertiary": "#e5f7ef",
+    "bg": "#262a33",
+    "bgSecondary": "#1f232c",
+    "error": "#ff5f5f",
+    "extra": "#d22a2a"
+  },
+  "striker": {
+    "primary": "#0f2d4e",
+    "secondary": "#d7dcda",
+    "tertiary": "#d6dbd9",
+    "bg": "#124883",
+    "bgSecondary": "#104176",
+    "error": "#fb4934",
+    "extra": "#cc241d"
+  },
+  "golden mist": {
+    "primary": "#b2945b",
+    "secondary": "#f8e594",
+    "tertiary": "#fcf9ec",
+    "bg": "#5a5348",
+    "bgSecondary": "#463d33",
+    "error": "#db836b",
+    "extra": "#a8563e"
+  },
+  "crimson glow": {
+    "primary": "#9b1d20",
+    "secondary": "#f08080",
+    "tertiary": "#fffafa",
+    "bg": "#4c1414",
+    "bgSecondary": "#2e0c0d",
+    "error": "#d9534f",
+    "extra": "#ae4647"
+  },
+  "silver nebula": {
+    "primary": "#c0c0c0",
+    "secondary": "#505050",
+    "tertiary": "#8c8c8c",
+    "bg": "#1f1f1f",
+    "bgSecondary": "#303030",
+    "error": "#ff7f7f",
+    "extra": "#b22222"
+  },
+  "serene sunset": {
+    "primary": "#ffe155",
+    "secondary": "#6e7f5e",
+    "tertiary": "#ffdb9e",
+    "bg": "#293241",
+    "bgSecondary": "#1b2631",
+    "error": "#e74c3c",
+    "extra": "#ffc857"
+  }
+}

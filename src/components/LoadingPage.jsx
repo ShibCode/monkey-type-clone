@@ -1,26 +1,16 @@
 "use client";
 
 import Logo from "@/svg component/Logo";
-import React, { useEffect, useState } from "react";
 import Spinner from "./Spinner";
 
 const LoadingPage = ({ colorsLoaded }) => {
-  const [theme, setTheme] = useState(false);
-
-  useEffect(() => {
-    const theme = localStorage.getItem("theme");
-    if (theme) setTheme(true);
-  }, []);
-
   return (
     <div className="bg-bgColor absolute inset-0 z-30">
-      {!theme && (
-        <div
-          className={`absolute inset-0 bg-[#313131] transition-all z-10 ${
-            colorsLoaded ? "opacity-0" : "opacity-100"
-          }`}
-        ></div>
-      )}
+      <div
+        className={`absolute inset-0 bg-[#313131] z-10 ${
+          colorsLoaded ? "opacity-0" : "opacity-100"
+        }`}
+      ></div>
 
       <div className="wrapper relative">
         <div className="contain items-end h-[55px]">

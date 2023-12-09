@@ -1,5 +1,5 @@
 const getColor = (type, opacity = 1) => {
-  const theme = JSON.parse(localStorage.getItem("theme"));
+  const theme = JSON.parse(localStorage.getItem("monkey-type-clone-theme"));
   const themeName = Object.keys(theme);
 
   const color = theme[themeName][type];

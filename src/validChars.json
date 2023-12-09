@@ -1,4 +1,4 @@
-const validChars = [
+[
   "A",
   "B",
   "C",
@@ -50,7 +50,5 @@ const validChars = [
   "w",
   "x",
   "y",
-  "z",
-];
-
-export default validChars;
+  "z"
+]

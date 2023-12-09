@@ -103,7 +103,7 @@ const Header = () => {
                 className="h-[20px]"
                 onClick={() => {
                   updateUser({});
-                  localStorage.removeItem("user");
+                  localStorage.removeItem("monkey-type-clone-user");
                   router.push("/login");
                 }}
               >

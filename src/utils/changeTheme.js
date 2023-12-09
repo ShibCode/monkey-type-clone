@@ -1,6 +1,12 @@
-import themes from "@/themes";
+import themes from "@/data/themes";
 
-const changeTheme = (theme) => {
+const changeTheme = (unverifiedTheme) => {
+  let theme = unverifiedTheme;
+
+  if (!themes[theme]) {
+    theme = "carbon";
+  }
+
   const { primary, secondary, tertiary, bg, bgSecondary, error, extra } =
     themes[theme];
 
@@ -16,7 +22,7 @@ const changeTheme = (theme) => {
   document.documentElement.style.setProperty("--extra-color", extra);
 
   localStorage.setItem(
-    "theme",
+    "monkey-type-clone-theme",
     JSON.stringify({
       [theme]: {
         primary,

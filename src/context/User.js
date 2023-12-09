@@ -8,13 +8,13 @@ const User = ({ children }) => {
   const [user, setUser] = useState({});
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
+    const user = JSON.parse(localStorage.getItem("monkey-type-clone-user"));
     if (user) setUser(user);
   }, []);
 
   const updateUser = (newUser) => {
     setUser(newUser);
-    localStorage.setItem("user", JSON.stringify(newUser));
+    localStorage.setItem("monkey-type-clone-user", JSON.stringify(newUser));
   };
 
   return (

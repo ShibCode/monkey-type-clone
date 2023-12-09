@@ -1,44 +1,16 @@
 import changeTheme from "./changeTheme";
+import themes from "@/data/themes";
 
 const onLoad = (setColorsState) => {
-  if (localStorage.getItem("theme") === null) {
-    const primary = getComputedStyle(document.documentElement).getPropertyValue(
-      "--primary-color"
-    );
-    const secondary = getComputedStyle(
-      document.documentElement
-    ).getPropertyValue("--secondary-color");
-    const tertiary = getComputedStyle(
-      document.documentElement
-    ).getPropertyValue("--tertiary-color");
-    const bgColor = getComputedStyle(document.documentElement).getPropertyValue(
-      "--bg-color"
-    );
-    const bgSecondary = getComputedStyle(
-      document.documentElement
-    ).getPropertyValue("--bg-secondary-color");
-    const error = getComputedStyle(document.documentElement).getPropertyValue(
-      "--error-color"
-    );
-    const extra = getComputedStyle(document.documentElement).getPropertyValue(
-      "--extra-color"
-    );
-
+  if (localStorage.getItem("monkey-type-clone-theme") === null) {
     const theme = {
-      carbon: {
-        primary,
-        secondary,
-        tertiary,
-        bgColor,
-        bgSecondary,
-        error,
-        extra,
-      },
+      carbon: themes.carbon,
     };
-
-    localStorage.setItem("theme", JSON.stringify(theme));
+    localStorage.setItem("monkey-type-clone-theme", JSON.stringify(theme));
   } else {
-    const activeTheme = JSON.parse(localStorage.getItem("theme"));
+    const activeTheme = JSON.parse(
+      localStorage.getItem("monkey-type-clone-theme")
+    );
     changeTheme(Object.keys(activeTheme)[0]);
     setColorsState(true);
   }

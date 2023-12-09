@@ -67,7 +67,7 @@ const Home = () => {
   };
 
   useEffect(() => {
-    onLoad(setColorsLoaded);
+    onLoad(setColorsLoaded, setIsLoaded);
     setTimeout(() => setIsLoaded(true), 1000);
   }, []);
 

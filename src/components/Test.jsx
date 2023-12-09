@@ -7,7 +7,8 @@ import { faRotateRight } from "@fortawesome/free-solid-svg-icons";
 import { TestStartedContext } from "@/context/TestStarted";
 import useUpdateEffect from "@/hooks/useUpdateEffect";
 import useTimer from "@/hooks/useTimer";
-import { SettingsContext } from "@/context/Settings";
+import { useSettings } from "@/context/Settings";
+import { getSettingValue } from "@/utils/getSettingValue";
 
 const Test = ({
   setResult,
@@ -44,7 +45,7 @@ const Test = ({
   const forceUpdate = React.useCallback(() => updateState({}), []);
 
   const { setTestStarted } = useContext(TestStartedContext);
-  const { settings } = useContext(SettingsContext);
+  const { settings } = useSettings();
 
   const generatePara = () => {
     const words = [];
@@ -255,14 +256,16 @@ const Test = ({
           time !== 0 && "opacity-100"
         }`}
       >
-        {settings.timerProgress === "show" && (
+        {getSettingValue("live progress", settings) === "show" && (
           <div>
             {mode === "words"
               ? `${position.word}/${totalWords}`
               : totalTime - seconds}
           </div>
         )}
-        {settings.liveWpm === "show" && <div>{Math.round(latestWpm)}</div>}
+        {getSettingValue("live speed", settings) === "show" && (
+          <div>{Math.round(latestWpm)}</div>
+        )}
       </div>
       <div
         className="flex scroll-smooth flex-wrap gap-2.5 relative h-[116px] overflow-hidden"
@@ -288,15 +291,20 @@ const Test = ({
                   <span
                     className={`text-2xl select-none ${`letter-${wIndex.toString()}-${cIndex.toString()}
                   }`} 
+                  
                     ${
                       typedWord && typedWord[cIndex] === char
-                        ? settings.flipTestColors === "on"
+                        ? getSettingValue("flip test colors", settings) === "on"
                           ? "text-primary"
                           : "text-secondary"
                         : cIndex >= typedWordLength
-                        ? settings.flipTestColors === "on"
+                        ? getSettingValue("flip test colors", settings) === "on"
                           ? "text-secondary"
                           : "text-primary"
+                        : getSettingValue("blind mode", settings) === ""
+                        ? getSettingValue("flip test colors", settings) === "on"
+                          ? "text-primary"
+                          : "text-secondary"
                         : "text-error"
                     }
                   `}
@@ -315,9 +323,16 @@ const Test = ({
                   .map((char, eIndex) => {
                     return (
                       <span
-                        className={`text-2xl select-none text-extra letter-${wIndex.toString()}-${(
+                        className={`text-2xl select-none letter-${wIndex.toString()}-${(
                           word.length + eIndex
                         ).toString()}
+                      } ${
+                        getSettingValue("blind mode", settings) === ""
+                          ? getSettingValue("flip test colors", settings) ===
+                            "on"
+                            ? "text-primary"
+                            : "text-secondary"
+                          : "text-error"
                       }`}
                         key={`00` + eIndex.toString()}
                       >
