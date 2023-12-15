@@ -15,7 +15,7 @@ const Section = ({ heading, settings }) => {
         <button>
           <FontAwesomeIcon
             icon={faChevronDown}
-            className={`transition-transform duration-100 ease-linear ${
+            className={`!transition-transform duration-100 ease-linear ${
               isExpanded ? "rotate-0" : "-rotate-90"
             }`}
           />
@@ -25,11 +25,11 @@ const Section = ({ heading, settings }) => {
       </div>
 
       <div
-        className={`grid transition-[grid-template-rows] duration-200 ease-in-out ${
+        className={`grid !transition-[grid-template-rows] duration-200 ease-in-out ${
           isExpanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
         }`}
       >
-        <div className="overflow-hidden px-[25px]">
+        <div className="px-[25px]">
           <div className="flex flex-col gap-5 py-4">
             {Object.keys(settings).map((settingName, i) => {
               const setting = { ...settings[settingName], title: settingName };

@@ -5,6 +5,12 @@
       "desc": "No errors or incorrect words are highlighted. Helps you to focus on raw speed. If enabled, quick end is recommended.",
       "options": ["off", ""],
       "active": "off"
+    },
+
+    "language": {
+      "type": "language",
+      "desc": "Change in which language you want to type.",
+      "active": "english"
     }
   },
 

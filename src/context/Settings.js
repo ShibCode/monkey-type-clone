@@ -4,7 +4,6 @@ import useUpdateEffect from "@/hooks/useUpdateEffect";
 import { createContext, useContext, useState } from "react";
 import themes from "@/data/themes";
 import defaultSettings from "@/data/settings";
-import { getSettingValue } from "@/utils/getSettingValue";
 
 export const SettingsContext = createContext();
 
@@ -25,7 +24,7 @@ const Settings = ({ children }) => {
     const defaultSections = Object.keys(defaultSettings);
 
     // removing a whole section
-    if (localSections > defaultSections) {
+    if (localSections.length > defaultSections.length) {
       localSections.forEach((localSection) => {
         if (!defaultSections.includes(localSection)) {
           const keyValues = Object.entries(localStorageSettings);
@@ -73,6 +72,8 @@ const Settings = ({ children }) => {
             }
           });
         }
+
+        localStorageSettings[defaultSection] = localSettings;
       }
       // if section does not exist so it adds section
       else {

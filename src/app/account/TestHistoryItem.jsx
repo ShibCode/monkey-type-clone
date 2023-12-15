@@ -1,28 +1,59 @@
-import React from "react";
+import Crown from "@/svg component/Crown";
+import {
+  faChartLine,
+  faEarthAmericas,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useState } from "react";
+import TestHistoryChart from "./TestHistoryChart";
 
 const TestHistoryItem = (test) => {
+  const [isShowingChart, setIsShowingChart] = useState(false);
+
   return (
-    <div
-      className={`text-tertiary flex w-full h-[56px] items-center text-center font-medium rounded-lg ${
+    <tr
+      className={`text-tertiary ${
         test.index % 2 === 0 ? "bg-bgSecondary" : "bg-transparent"
       }`}
     >
-      <div className="w-[15%]">{test.wpm}</div>
-      <div className="w-[15%]">{test.raw}</div>
-      <div className="w-[15%]">{test.accuracy}%</div>
-      <div className="w-[19%]">
+      <td className="p-2 pl-4">
+        {test.isPersonalBest && <Crown className="w-5" />}
+      </td>
+      <td className="p-2">{test.wpm}</td>
+      <td className="p-2">{test.raw}</td>
+      <td className="p-2">{test.accuracy}%</td>
+      <td className="p-2">
         {test.correct}/{test.incorrect}/{test.extra}/{test.missed}
-      </div>
-      <div className="w-[18%]">
+      </td>
+      <td className="p-2">
         {test.mode.name} {test.mode.category}
-      </div>
-      <div className="flex flex-col w-[18%] items-center">
-        <div className="w-max text-start">
-          <div>{test.date}</div>
-          <div>{test.time}</div>
+      </td>
+      <td className="p-2">
+        <div className="flex gap-2">
+          <div tooltip={test.language} className="hover-tooltip">
+            <FontAwesomeIcon icon={faEarthAmericas} />
+          </div>
+
+          <button
+            tooltip="View graph"
+            className="hover-tooltip"
+            onClick={() => setIsShowingChart(true)}
+          >
+            <FontAwesomeIcon icon={faChartLine} />
+          </button>
         </div>
-      </div>
-    </div>
+
+        <TestHistoryChart
+          isShowingChart={isShowingChart}
+          setIsShowingChart={setIsShowingChart}
+          {...test}
+        />
+      </td>
+      <td className="p-2 pr-4">
+        <div>{test.date}</div>
+        <div>{test.time}</div>
+      </td>
+    </tr>
   );
 };
 

@@ -1,23 +1,46 @@
 "use client";
 
 import { post } from "@/utils/post";
-import { redirect } from "next/dist/server/api-utils";
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { faCaretDown, faUser } from "@fortawesome/free-solid-svg-icons";
 import TestHistoryItem from "./TestHistoryItem";
 import onLoad from "@/utils/onLoad";
 import LoadingPage from "@/components/LoadingPage";
-import Chart2 from "./Chart2";
-import Chart1 from "./Chart1";
+import BarChart from "./BarChart";
+import LineChart from "./LineChart";
 import { useRouter } from "next/navigation";
 import Spinner from "@/components/Spinner";
+import BestTest from "./BestTest";
+import _debounce from "lodash/debounce";
+
+const tableHeadings = [
+  { name: "", isSortable: false, onHoverTooltip: false },
+  { name: "wpm", isSortable: true, onHoverTooltip: false },
+  { name: "raw", isSortable: true, onHoverTooltip: false },
+  { name: "accuracy", isSortable: true, onHoverTooltip: false },
+  {
+    name: "chars",
+    isSortable: false,
+    onHoverTooltip: "correct/incorrect/extra/missed",
+  },
+  { name: "mode", isSortable: false, onHoverTooltip: false },
+  { name: "info", isSortable: false, onHoverTooltip: false },
+  { name: "date", isSortable: true, onHoverTooltip: false },
+];
 
 const Account = () => {
   const [user, setUser] = useState({});
-  const [detailedStats, setDetailedStats] = useState([]);
-  const [testSpeedRange, setTestSpeedRange] = useState({});
-  const [chartData, setChartData] = useState({});
+  const [allTimeStats, setAllTimeStats] = useState([]);
+  const [barChartData, setBarChartData] = useState({});
+  const [lineChartData, setLineChartData] = useState({});
+  const [testsHistory, setTestsHistory] = useState([]);
+  const [isMoreTests, setIsMoreTests] = useState(false);
+
+  const [sortingCriteria, setSortingCriteria] = useState({
+    field: "date",
+    order: "descending",
+  });
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [colorsLoaded, setColorsLoaded] = useState(false);
@@ -35,11 +58,20 @@ const Account = () => {
     else {
       const { email } = user;
       post("/get-user-data", { email }).then(
-        ({ user, testSpeedRange, detailedStats, chartData }) => {
+        ({
+          user,
+          tests,
+          isMoreTests,
+          barChartData,
+          allTimeStats,
+          lineChartData,
+        }) => {
           setUser(user);
-          setDetailedStats(detailedStats);
-          setTestSpeedRange(testSpeedRange);
-          setChartData(chartData);
+          setAllTimeStats(allTimeStats);
+          setBarChartData(barChartData);
+          setLineChartData(lineChartData);
+          setIsMoreTests(isMoreTests);
+          setTestsHistory(tests);
 
           setIsLoaded(true);
         }
@@ -49,14 +81,44 @@ const Account = () => {
 
   const loadMoreTests = async () => {
     setIsLoadingTests(true);
-    const { testHistory } = await post("/get-more-tests", {
-      _id: user._id,
-      totalCurrentTests: user.testHistory.length,
+    const { newTests, isMoreTests } = await post("/get-more-tests", {
+      _id: user.userId,
+      totalCurrentTests: testsHistory.length,
+      sortingCriteria,
     });
 
-    setUser((prev) => ({ ...prev, testHistory }));
+    setTestsHistory((prev) => [...prev, ...newTests]);
+    setIsMoreTests(isMoreTests);
     setIsLoadingTests(false);
   };
+
+  const debouncedGetSortedTests = _debounce(async (heading) => {
+    let newSortingCriteria = {};
+
+    if (sortingCriteria.field === heading.name) {
+      newSortingCriteria = {
+        ...sortingCriteria,
+        order:
+          sortingCriteria.order === "ascending" ? "descending" : "ascending",
+      };
+    } else {
+      newSortingCriteria = {
+        ...sortingCriteria,
+        field: heading.name,
+      };
+    }
+
+    setSortingCriteria(newSortingCriteria);
+
+    const data = await post("/get-sorted-tests", {
+      userId: user.userId,
+      sortingCriteria: newSortingCriteria,
+    });
+    if (data.success) {
+      setTestsHistory(data.tests);
+      setIsMoreTests(data.isMoreTests);
+    }
+  }, 500);
 
   return isLoaded ? (
     <div className="wrapper my-12">
@@ -100,86 +162,32 @@ const Account = () => {
 
         <div className="flex flex-col mod:flex-row gap-8">
           <div className="bg-bgSecondary grid grid-cols-2 gap-8 mod:gap-0 sm:grid-cols-4 py-5 mod:px-2 rounded-lg w-full">
-            {Object.keys(user.bestTests.time).map((modeName, index) => {
-              const test = user.bestTests.time[modeName];
-              return (
-                <div
-                  className="best-test flex flex-col relative items-center "
-                  key={index}
-                >
-                  <div
-                    className={`text-sm mod:text-[10px] lg:text-sm detailed-stats absolute w-max top-0 bottom-0 justify-between bg-bgSecondary z-10 flex flex-col items-center opacity-0 cursor-default transition-all duration-150 ${
-                      test.wpm && "hover:opacity-100"
-                    }`}
-                  >
-                    <h2 className="text-primary">
-                      {test.mode.category} seconds
-                    </h2>
-                    <p className="text-tertiary">{test.wpm} wpm</p>
-                    <p className="text-tertiary">{test.raw} raw</p>
-                    <p className="text-tertiary">{test.accuracy} acc</p>
-                    <p className="text-primary">{test.date}</p>
-                  </div>
-
-                  <h2 className="text-primary text-sm mod:text-[12px] lg:text-sm">
-                    {test.mode.category} seconds
-                  </h2>
-                  <p className="text-tertiary text-[36px] sm:text-[42px] mod:text-[32px] lg:text-[36px] xl:text-[42px]">
-                    {test.wpm ? Math.round(test.wpm) : "-"}
-                  </p>
-                  <p className="text-tertiary opacity-75 text-2xl mod:text-xl lg:text-2xl">
-                    {test.accuracy ? Math.round(test.accuracy) + "%" : "-"}
-                  </p>
-                </div>
-              );
-            })}
+            {user.bestTests.time.map((test, index) => (
+              <BestTest key={index} test={test} mode="seconds" />
+            ))}
           </div>
+
           <div className="bg-bgSecondary grid grid-cols-2 gap-8 mod:gap-0 sm:grid-cols-4 py-5 mod:px-2 rounded-lg w-full">
-            {Object.keys(user.bestTests.words).map((modeName, index) => {
-              const test = user.bestTests.words[modeName];
-
-              return (
-                <div
-                  className="best-test flex flex-col relative items-center"
-                  key={index}
-                >
-                  <div className="text-sm mod:text-[10px] lg:text-sm detailed-stats absolute w-max top-0 bottom-0 justify-between bg-bgSecondary z-10 flex flex-col items-center opacity-0 cursor-default transition-all duration-150 hover:opacity-100">
-                    <h2 className="text-primary">{test.mode.category} words</h2>
-                    <p className="text-tertiary">{test.wpm} wpm</p>
-                    <p className="text-tertiary">{test.raw} raw</p>
-                    <p className="text-tertiary">{test.accuracy} acc</p>
-                    <p className="text-primary">{test.date}</p>
-                  </div>
-
-                  <h2 className="text-primary text-sm mod:text-[12px] lg:text-sm">
-                    {test.mode.category} words
-                  </h2>
-                  <p className="text-tertiary text-[36px] sm:text-[42px] mod:text-[32px] lg:text-[36px] xl:text-[42px]">
-                    {test.wpm ? Math.round(test.wpm) : "-"}
-                  </p>
-                  <p className="text-tertiary opacity-75 text-2xl mod:text-xl lg:text-2xl">
-                    {test.accuracy ? Math.round(test.accuracy) + "%" : "-"}
-                  </p>
-                </div>
-              );
-            })}
+            {user.bestTests.words.map((test, index) => (
+              <BestTest key={index} test={test} mode="words" />
+            ))}
           </div>
         </div>
 
         <div className="flex flex-col gap-12">
           <div className="h-[400px] w-full">
-            <Chart1
+            <LineChart
               totalTests={user.totalTestsCompleted}
-              chartData={chartData}
+              chartData={lineChartData}
             />
           </div>
           <div className="h-[200px] w-full">
-            <Chart2 wpmRange={testSpeedRange} />
+            <BarChart wpmRange={barChartData} />
           </div>
         </div>
 
-        <div className="grid grid-cols-detailedStatsLayout gap-8">
-          {detailedStats.map((stat, index) => {
+        <div className="grid grid-cols-allTimeStatsLayout gap-8">
+          {allTimeStats.map((stat, index) => {
             return (
               <div key={index}>
                 <h2 className="text-primary">{stat.name || "Test Started"}</h2>
@@ -189,31 +197,64 @@ const Account = () => {
           })}
         </div>
 
-        <div className="flex flex-col w-full">
-          <div className="text-primary flex w-full h-[44px] items-center text-center text-xs rounded-lg -mb-2">
-            <div className="w-[15%]">wpm</div>
-            <div className="w-[15%]">raw</div>
-            <div className="w-[15%]">accuracy</div>
-            <div className="w-[19%]">chars</div>
-            <div className="w-[18%]">mode</div>
-            <div className="flex flex-col w-[18%]">date</div>
-          </div>
-          {user.testHistory?.map((test, index) => {
-            return <TestHistoryItem key={index} {...test} index={index} />;
-          })}
-
-          {isLoadingTests === false ? (
-            <div
-              onClick={loadMoreTests}
-              className="bg-bgSecondary text-tertiary hover:bg-tertiary hover:text-bgColor cursor-pointer transition-all duration-[250] grid place-items-center rounded-lg h-[40px] mt-4"
-            >
-              load more
-            </div>
-          ) : (
-            <div className="mx-auto h-[40px] mt-4">
-              <Spinner fill="fill-bgSecondary" />
-            </div>
-          )}
+        <div className="flex flex-col">
+          <table>
+            <thead>
+              <tr className="text-primary text-xs">
+                {tableHeadings.map((heading, index) => (
+                  <td
+                    key={index}
+                    tooltip={
+                      heading.onHoverTooltip ? heading.onHoverTooltip : ""
+                    }
+                    onClick={() => {
+                      if (!heading.isSortable) return;
+                      debouncedGetSortedTests(heading);
+                    }}
+                    className={`p-2 select-none
+                    ${index === 0 && "pl-4"} 
+                    ${index + 1 === tableHeadings.length && "pr-4"}
+                    ${
+                      heading.isSortable &&
+                      "hover:bg-bgSecondary duration-150 cursor-pointer"
+                    }
+                    ${heading.onHoverTooltip && "hover-tooltip"}
+                    `}
+                  >
+                    <span>{heading.name}</span>
+                    {sortingCriteria.field === heading.name && (
+                      <FontAwesomeIcon
+                        icon={faCaretDown}
+                        className={`ml-1.5 ${
+                          sortingCriteria.order === "ascending"
+                            ? "rotate-180"
+                            : ""
+                        }`}
+                      />
+                    )}
+                  </td>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {testsHistory.map((test, index) => (
+                <TestHistoryItem key={index} {...test} index={index} />
+              ))}
+            </tbody>
+          </table>
+          {isMoreTests &&
+            (isLoadingTests === false ? (
+              <div
+                onClick={loadMoreTests}
+                className="bg-bgSecondary text-tertiary hover:bg-tertiary hover:text-bgColor cursor-pointer transition-all duration-[250] grid place-items-center rounded-lg h-[40px] mt-4"
+              >
+                load more
+              </div>
+            ) : (
+              <div className="mx-auto h-[40px] mt-4">
+                <Spinner fill="fill-bgSecondary" />
+              </div>
+            ))}
         </div>
       </div>
     </div>

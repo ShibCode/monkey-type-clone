@@ -2,6 +2,10 @@ import React from "react";
 import themes from "@/data/themes";
 import { useSettings } from "@/context/Settings";
 import changeTheme from "@/utils/changeTheme";
+import groups from "../../../public/languages/groups.json";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
+import Dropdown from "./Dropdown";
 
 const Setting = ({ type, title, desc, options, active, sectionHeading }) => {
   const { setSettings } = useSettings();
@@ -9,6 +13,7 @@ const Setting = ({ type, title, desc, options, active, sectionHeading }) => {
   const updateSetting = (newValue) => {
     if (type === "theme") changeTheme(newValue);
 
+    // only changing the active key
     setSettings((prev) => {
       return {
         ...prev,
@@ -35,7 +40,7 @@ const Setting = ({ type, title, desc, options, active, sectionHeading }) => {
           {desc && <p className="text-tertiary">{desc}</p>}
         </div>
 
-        {!(type === "manyOpts" || type === "theme") && (
+        {type === "someOpt" && (
           <div className="flex gap-2 w-1/3">
             {options.map((option, i) => (
               <button
@@ -51,6 +56,14 @@ const Setting = ({ type, title, desc, options, active, sectionHeading }) => {
               </button>
             ))}
           </div>
+        )}
+
+        {type === "language" && (
+          <Dropdown
+            active={active}
+            groups={groups}
+            updateSetting={updateSetting}
+          />
         )}
       </div>
 

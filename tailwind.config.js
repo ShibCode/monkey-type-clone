@@ -18,7 +18,7 @@ module.exports = {
     extend: {
       gridTemplateColumns: {
         themesLayout: "repeat(auto-fill, minmax(290px, 1fr))",
-        detailedStatsLayout:
+        allTimeStatsLayout:
           "repeat(var(--max-col), minmax(var(--min-item-size), 1fr))",
       },
       colors: {

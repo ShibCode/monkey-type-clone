@@ -7,8 +7,11 @@ import { UserContext } from "@/context/User";
 import getColor from "@/utils/getColor";
 import { faRotateRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { TestStartedContext } from "@/context/TestStarted";
 import Link from "next/link";
+import Crown from "@/svg component/Crown";
+import { AnimatePresence, motion } from "framer-motion";
+import { getSettingValue } from "@/utils/getSettingValue";
+import { useSettings } from "@/context/Settings";
 
 const Result = ({
   result,
@@ -20,6 +23,9 @@ const Result = ({
   restart,
 }) => {
   const { user } = useContext(UserContext);
+  const { settings } = useSettings();
+
+  const language = getSettingValue("language", settings).replace(/_/g, " ");
 
   const { correct, incorrect, missed, extra, timeTaken } = result;
 
@@ -41,6 +47,7 @@ const Result = ({
   };
 
   const [tabIndex, setTabIndex] = useState(0);
+  const [isPersonalBest, setIsPersonalBest] = useState(false);
 
   const chartData = {
     labels:
@@ -137,8 +144,9 @@ const Result = ({
     return i / 4;
   }
 
-  function saveTest(testData) {
-    post("/save-test", { email: user.email, testData });
+  async function saveTest(testData) {
+    const res = await post("/save-test", { email: user.email, testData });
+    return res;
   }
 
   function handleKeyDown(e) {
@@ -156,7 +164,16 @@ const Result = ({
   }
 
   useEffect(() => {
-    if (user.email) saveTest(testData);
+    if (user.email)
+      saveTest({
+        ...testData,
+        wpmEachSecond: [...wpmEachSecond, testData.wpm],
+        rawWpmEachSecond: [...rawWpmEachSecond, testData.raw],
+        errorsEachSecond,
+        language,
+      }).then((res) => {
+        if (res.success && res.isPersonalBest) setIsPersonalBest(true);
+      });
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
@@ -169,7 +186,20 @@ const Result = ({
           <div className="flex w-full gap-4">
             <div className="min-w-[250px]">
               <div>
-                <h2 className="text-primary text-3xl">wpm</h2>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-primary text-3xl">wpm</h2>
+                  <AnimatePresence>
+                    {isPersonalBest && (
+                      <div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="text-bgSecondary bg-secondary w-7 h-7 grid place-items-center rounded-lg"
+                      >
+                        <Crown className={"max-w-[16px]"} />
+                      </div>
+                    )}
+                  </AnimatePresence>
+                </div>
                 <p className="text-secondary text-6xl">{stats.wpm}</p>
               </div>
 
@@ -190,6 +220,7 @@ const Result = ({
               <p className="text-secondary">
                 {mode} {modeCategory}
               </p>
+              <p className="text-secondary leading-[100%]">{language}</p>
             </div>
             <div>
               <h2 className="text-primary">raw</h2>

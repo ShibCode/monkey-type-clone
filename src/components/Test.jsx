@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from "react";
-import rawWords from "@/wordlists/normal";
 import validChars from "@/validChars";
 import calculateWpm from "@/utils/calulateWpm";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -48,20 +47,26 @@ const Test = ({
   const { settings } = useSettings();
 
   const generatePara = () => {
-    const words = [];
+    const activeLanguage = getSettingValue("language", settings);
 
-    const cap = mode === "words" ? totalWords : 100;
+    fetch(`/languages/${activeLanguage}.json`)
+      .then((res) => res.json())
+      .then((language) => {
+        const words = [];
 
-    for (let i = 0; i < cap; i++) {
-      let rng = Math.ceil(Math.random() * 199);
+        const cap = mode === "words" ? totalWords : 100;
 
-      if (rawWords[rng] === words[words.length - 1]) {
-        rng = Math.ceil(Math.random() * 199);
-      }
+        for (let i = 0; i < cap; i++) {
+          let rng = Math.floor(Math.random() * language.words.length);
 
-      words.push(rawWords[rng]);
-    }
-    setWords(words);
+          if (language.words[rng] === words[words.length - 1]) {
+            rng = Math.floor(Math.random() * language.words.length);
+          }
+
+          words.push(language.words[rng]);
+        }
+        setWords(words);
+      });
   };
 
   const getResult = (isCompleted = false) => {

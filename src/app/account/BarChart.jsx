@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS } from "chart.js/auto";
 import getColor from "@/utils/getColor";
 
-const Chart2 = ({ wpmRange }) => {
+const BarChart = ({ wpmRange }) => {
   const chartData = {
     labels: Object.keys(wpmRange),
     datasets: [
@@ -61,4 +61,4 @@ const Chart2 = ({ wpmRange }) => {
   return <Bar data={chartData} options={options} />;
 };
 
-export default Chart2;
+export default BarChart;

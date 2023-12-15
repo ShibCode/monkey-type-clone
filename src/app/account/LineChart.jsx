@@ -3,7 +3,7 @@ import { Scatter } from "react-chartjs-2";
 import { Chart as ChartJS } from "chart.js/auto";
 import getColor from "@/utils/getColor";
 
-const Chart1 = ({ totalTests, chartData }) => {
+const LineChart = ({ totalTests, chartData }) => {
   const data = {
     labels: new Array(totalTests).fill(0).map((_, i) => i),
     datasets: [
@@ -106,4 +106,4 @@ const Chart1 = ({ totalTests, chartData }) => {
   return <Scatter data={data} options={options} />;
 };
 
-export default Chart1;
+export default LineChart;

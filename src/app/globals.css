@@ -16,7 +16,7 @@
   }
 }
 
-* {
+#settingsPage * {
   @apply transition-colors duration-200;
 }
 
@@ -32,6 +32,9 @@
   }
   .settings-section {
     @apply flex flex-col gap-6 w-full overflow-hidden;
+  }
+  .hover-tooltip {
+    @apply cursor-pointer relative before:text-base after:text-base before:absolute before:bg-[hsla(0,0%,6%,0.95)] before:text-white before:w-max before:py-1.5 before:px-4 before:left-1/2 before:-translate-x-1/2 before:bottom-[calc(100%+6px)] after:absolute  after:border-transparent after:border-l-[6px] after:border-r-[6px] after:border-t-[6px] after:border-t-[hsla(0,0%,6%,0.95)] after:left-1/2 after:-translate-x-1/2 after:bottom-full before:opacity-0 after:opacity-0 before:translate-y-[0.375em] after:translate-y-[0.375em] hover:before:opacity-100 hover:after:opacity-100 hover:before:translate-y-0 hover:after:translate-y-0 before:pointer-events-none after:pointer-events-none before:transition-all after:transition-all before:duration-200 after:duration-200 before:content-[attr(tooltip)];
   }
 }
 

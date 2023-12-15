@@ -6,7 +6,7 @@ export async function POST(req, res) {
   try {
     await dbConnect();
 
-    const { _id, totalCurrentTests, sortingCriteria } = await req.json();
+    const { userId, sortingCriteria } = await req.json();
 
     let field = "";
     let order = "";
@@ -17,15 +17,17 @@ export async function POST(req, res) {
     if (sortingCriteria.order === "ascending") order = 1;
     else order = -1;
 
-    const newTests = await Test.find({ userId: _id })
+    const tests = await Test.find({ userId })
       .sort({ [field]: order })
-      .skip(totalCurrentTests)
       .limit(10);
 
-    const isMoreTests = (await Test.countDocuments()) > totalCurrentTests + 10;
+    const isMoreTests = (await Test.countDocuments()) > 10;
 
-    return NextResponse.json({ newTests, isMoreTests });
+    return NextResponse.json({ success: true, tests, isMoreTests });
   } catch (e) {
-    return NextResponse.json({ message: "Something went wrong" });
+    return NextResponse.json({
+      success: false,
+      message: "Something went wrong",
+    });
   }
 }
