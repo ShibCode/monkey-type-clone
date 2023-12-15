@@ -49,6 +49,8 @@ const Test = ({
   const generatePara = () => {
     const activeLanguage = getSettingValue("language", settings);
 
+    const start = Date.now();
+
     fetch(`/languages/${activeLanguage}.json`)
       .then((res) => res.json())
       .then((language) => {
@@ -67,6 +69,8 @@ const Test = ({
         }
         setWords(words);
       });
+
+    console.log(Date.now() - start);
   };
 
   const getResult = (isCompleted = false) => {
