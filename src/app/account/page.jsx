@@ -52,6 +52,7 @@ const Account = () => {
   useEffect(() => {
     onLoad(setColorsLoaded);
 
+    // if (typeof window === "undefined") {
     const user = JSON.parse(localStorage.getItem("monkey-type-clone-user"));
 
     if (!user) router.push("/");
@@ -77,6 +78,7 @@ const Account = () => {
         }
       );
     }
+    // }
   }, []);
 
   const loadMoreTests = async () => {

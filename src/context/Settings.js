@@ -11,6 +11,8 @@ export const useSettings = () => useContext(SettingsContext);
 
 const Settings = ({ children }) => {
   const [settings, setSettings] = useState(() => {
+    if (typeof window === "undefined") return;
+
     let localStorageSettings = JSON.parse(
       localStorage.getItem("monkey-type-clone-settings")
     );
