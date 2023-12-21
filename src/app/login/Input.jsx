@@ -8,7 +8,7 @@ const Input = ({ type = "text", placeholder, onChange, name, value }) => {
       placeholder={placeholder}
       onChange={onChange}
       value={value}
-      autoComplete={false}
+      autoComplete=""
       className="text-tertiary outline-none caret-secondary h-[33px] pl-2 rounded-md bg-bgSecondary placeholder:text-primary"
     />
   );

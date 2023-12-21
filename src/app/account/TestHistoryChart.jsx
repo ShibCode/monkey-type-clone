@@ -6,17 +6,13 @@ import React from "react";
 import createArray from "@/utils/createArray";
 
 const TestHistoryChart = ({
-  isShowingChart,
-  setIsShowingChart,
+  isActive,
+  setIsActive,
   timeTaken,
   wpmEachSecond,
   rawWpmEachSecond,
   errorsEachSecond,
 }) => {
-  const handleClick = () => {
-    setIsShowingChart(false);
-  };
-
   function getStepSize() {
     const maxNormal = Math.max.apply(null, wpmEachSecond);
     const maxRaw = Math.max.apply(null, rawWpmEachSecond);
@@ -117,14 +113,14 @@ const TestHistoryChart = ({
 
   return (
     <AnimatePresence>
-      {isShowingChart && (
+      {isActive && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.125 }}
           className="fixed inset-0 bg-black bg-opacity-50 z-20 grid place-items-center"
-          onClick={handleClick}
+          onClick={() => setIsActive(false)}
         >
           <div
             className="bg-bgColor w-[90%] max-w-[800px] h-[300px] p-4 rounded-lg"

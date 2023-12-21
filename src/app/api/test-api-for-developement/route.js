@@ -7,11 +7,14 @@ import { NextResponse } from "next/server";
 export async function GET() {
   try {
     await dbConnect();
+    // const startTime = new Date();
 
-    const outputs = await Test.find({}).sort({ createdAt: -1 });
-    return NextResponse.json({
-      outputs,
-    });
+    // const endTime = new Date();
+    // const executionTime = endTime - startTime;
+
+    const users = await User.find();
+
+    return NextResponse.json({ users });
   } catch (e) {
     console.log(e);
   }

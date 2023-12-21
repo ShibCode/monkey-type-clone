@@ -1,9 +1,48 @@
+import { Test } from "@/model/test";
+
 const modes = {
   words: [10, 25, 50, 100],
   time: [15, 30, 60, 120],
 };
 
-const getBestTests = (tests) => {
+const getDetailedBestTests = async (modeName) => {
+  return await Test.aggregate([
+    {
+      $match: {
+        "mode.name": modeName,
+      },
+    },
+    {
+      $sort: {
+        wpm: -1,
+      },
+    },
+    {
+      $group: {
+        _id: {
+          mode: {
+            name: "$mode.name",
+            category: "$mode.category",
+          },
+          language: "$language",
+        },
+        doc: { $first: "$$ROOT" },
+      },
+    },
+    {
+      $replaceRoot: {
+        newRoot: "$doc",
+      },
+    },
+    {
+      $sort: {
+        wpm: -1,
+      },
+    },
+  ]);
+};
+
+const getSummarisedBestTests = (tests) => {
   const bestTests = {};
 
   for (let mode of Object.keys(modes)) {
@@ -32,4 +71,14 @@ const getBestTests = (tests) => {
   return bestTests;
 };
 
+const getBestTests = async (tests) => {
+  const summarised = getSummarisedBestTests(tests);
+
+  const detailed = {
+    time: await getDetailedBestTests("time"),
+    words: await getDetailedBestTests("words"),
+  };
+
+  return { summarised, detailed };
+};
 export default getBestTests;

@@ -16,6 +16,9 @@ module.exports = {
       "2xl": "1536px",
     },
     extend: {
+      fontFamily: {
+        roboto: "Roboto Mono",
+      },
       gridTemplateColumns: {
         themesLayout: "repeat(auto-fill, minmax(290px, 1fr))",
         allTimeStatsLayout:
@@ -32,6 +35,7 @@ module.exports = {
       },
       animation: {
         blink: "blink 1s linear infinite",
+        fadeIn: "fadeIn 100ms linear",
       },
       keyframes: {
         blink: {
@@ -39,6 +43,10 @@ module.exports = {
           "25%": { opactiy: "0.7" },
           "50%": { opacity: "0" },
           "75%": { opactiy: "0.7" },
+          "100%": { opacity: "1" },
+        },
+        fadeIn: {
+          "0%": { opacity: "0" },
           "100%": { opacity: "1" },
         },
       },

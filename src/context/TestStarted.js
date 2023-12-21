@@ -1,8 +1,10 @@
 "use client";
 
-import { createContext, useState } from "react";
+import { createContext, useContext, useState } from "react";
 
-export const TestStartedContext = createContext();
+const TestStartedContext = createContext();
+
+export const useTestStarted = () => useContext(TestStartedContext);
 
 const TestStarted = ({ children }) => {
   const [testStarted, setTestStarted] = useState(false);

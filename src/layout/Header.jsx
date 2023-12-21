@@ -13,12 +13,12 @@ import Link from "next/link";
 import Logo from "@/svg component/Logo";
 import { useContext } from "react";
 import { UserContext } from "@/context/User";
-import { TestStartedContext } from "@/context/TestStarted";
+import { useTestStarted } from "@/context/TestStarted";
 import { useRouter } from "next/navigation";
 
 const Header = () => {
   const { user, updateUser } = useContext(UserContext);
-  const { testStarted } = useContext(TestStartedContext);
+  const { testStarted } = useTestStarted();
 
   const router = useRouter();
 
@@ -54,30 +54,36 @@ const Header = () => {
               testStarted ? "opacity-0" : "opacity-100"
             }`}
           >
-            <FontAwesomeIcon
-              icon={faKeyboard}
-              width={20}
-              height={20}
-              className="headerIcon text-primary hover:text-tertiary"
-            />
-            <FontAwesomeIcon
-              icon={faCrown}
-              width={20}
-              height={20}
-              className="headerIcon"
-            />
-            <FontAwesomeIcon
-              icon={faInfo}
-              width={20}
-              height={20}
-              className="headerIcon"
-            />
-            <Link href="/settings" className="h-[20px]" tabIndex={-1}>
+            <Link href="/">
+              <FontAwesomeIcon
+                icon={faKeyboard}
+                width={20}
+                height={20}
+                className="text-primary hover:text-tertiary cursor-pointer transition-colors duration-75"
+              />
+            </Link>
+            <Link href="/">
+              <FontAwesomeIcon
+                icon={faCrown}
+                width={20}
+                height={20}
+                className="text-primary hover:text-tertiary cursor-pointer transition-colors duration-75"
+              />
+            </Link>
+            <Link href="/">
+              <FontAwesomeIcon
+                icon={faInfo}
+                width={20}
+                height={20}
+                className="text-primary hover:text-tertiary cursor-pointer transition-colors duration-75"
+              />
+            </Link>
+            <Link href="/settings" tabIndex={-1}>
               <FontAwesomeIcon
                 icon={faGear}
                 width={20}
                 height={20}
-                className="headerIcon"
+                className="text-primary hover:text-tertiary cursor-pointer transition-colors duration-75"
               />
             </Link>
           </div>
@@ -111,7 +117,7 @@ const Header = () => {
                   icon={faRightToBracket}
                   width={20}
                   height={20}
-                  className="headerIcon"
+                  className="text-primary hover:text-tertiary cursor-pointer transition-colors duration-75"
                 />
               </button>
             </>
@@ -121,7 +127,7 @@ const Header = () => {
                 icon={faUser}
                 width={20}
                 height={20}
-                className="headerIcon"
+                className="text-primary hover:text-tertiary cursor-pointer transition-colors duration-75"
               />
             </Link>
           )}

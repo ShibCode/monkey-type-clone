@@ -7,7 +7,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
 import Dropdown from "./Dropdown";
 
-const Setting = ({ type, title, desc, options, active, sectionHeading }) => {
+const Setting = ({
+  type,
+  icon,
+  title,
+  desc,
+  options,
+  active,
+  sectionHeading,
+}) => {
   const { setSettings } = useSettings();
 
   const updateSetting = (newValue) => {
@@ -33,7 +41,8 @@ const Setting = ({ type, title, desc, options, active, sectionHeading }) => {
       <div className="flex justify-between items-center gap-6 w-full">
         <div className={`flex flex-col w-2/3 flex-1`}>
           <div className="flex items-center gap-2">
-            <img src="/palette-solid.svg" alt="" />
+            <FontAwesomeIcon icon={icon} className="text-primary" />
+
             <h6 className="text-primary">{title}</h6>
           </div>
 
@@ -95,7 +104,7 @@ const Setting = ({ type, title, desc, options, active, sectionHeading }) => {
                 key={i}
                 onClick={() => updateSetting(themeName)}
                 style={{ color: secondary, backgroundColor: bg }}
-                className={`group h-9 w-full rounded-lg hover:scale-110 hover:z-10 transition-transform duration-100 relative ${
+                className={`group h-9 w-full rounded-lg hover:scale-110 hover:z-10 !transition-transform relative ${
                   themeName === active ? "outline scale-110 z-20" : ""
                 }`}
               >

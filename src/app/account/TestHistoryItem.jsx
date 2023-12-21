@@ -44,8 +44,8 @@ const TestHistoryItem = (test) => {
         </div>
 
         <TestHistoryChart
-          isShowingChart={isShowingChart}
-          setIsShowingChart={setIsShowingChart}
+          isActive={isShowingChart}
+          setIsActive={setIsShowingChart}
           {...test}
         />
       </td>

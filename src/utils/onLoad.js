@@ -12,6 +12,7 @@ const onLoad = (setColorsState) => {
       localStorage.getItem("monkey-type-clone-theme")
     );
     changeTheme(Object.keys(activeTheme)[0]);
+
     setColorsState(true);
   }
 };

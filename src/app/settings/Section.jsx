@@ -29,7 +29,7 @@ const Section = ({ heading, settings }) => {
           isExpanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
         }`}
       >
-        <div className="px-[25px]">
+        <div className="px-[25px] overflow-hidden">
           <div className="flex flex-col gap-5 py-4">
             {Object.keys(settings).map((settingName, i) => {
               const setting = { ...settings[settingName], title: settingName };

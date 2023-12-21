@@ -14,6 +14,7 @@ export async function POST(req, res) {
     const bestTestInCategory = await Test.findOne({
       userId,
       mode: testData.mode,
+      language: testData.language,
     })
       .sort({ wpm: -1 })
       .limit(1);

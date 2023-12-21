@@ -19,7 +19,7 @@ export async function POST(req, res) {
     const seconds = tests.reduce((acc, test) => acc + test.timeTaken, 0); // gets total seconds typed
     const timeTyping = new Date(seconds * 1000).toISOString().slice(11, 19); // converts seconds into formatted time
 
-    const bestTests = getBestTests(tests); // gets best tests in each mode and category
+    const bestTests = await getBestTests(tests); // gets best tests in each mode and category
     const allTimeStats = getAllTimeStats(tests, timeTyping); // gets the general best and average stats
     const lineChartData = getLineChartData(tests); // getting line chart data
     const barChartData = getBarChartData(tests); // getting bar chart data

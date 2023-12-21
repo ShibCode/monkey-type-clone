@@ -1,17 +1,14 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import validChars from "@/validChars";
 import calculateWpm from "@/utils/calulateWpm";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRotateRight } from "@fortawesome/free-solid-svg-icons";
-import { TestStartedContext } from "@/context/TestStarted";
+import { useTestStarted } from "@/context/TestStarted";
 import useUpdateEffect from "@/hooks/useUpdateEffect";
 import useTimer from "@/hooks/useTimer";
 import { useSettings } from "@/context/Settings";
 import { getSettingValue } from "@/utils/getSettingValue";
 
-const Test = ({
+const TestArea = ({
   setResult,
-  isCompleted,
   setIsCompleted,
   setWpmEachSecond,
   setRawWpmEachSecond,
@@ -19,7 +16,6 @@ const Test = ({
   mode,
   totalWords,
   totalTime,
-  restart,
 }) => {
   const [words, setWords] = useState([]);
   const [typedWords, setTypedWords] = useState([]);
@@ -43,7 +39,7 @@ const Test = ({
   const [state, updateState] = useState();
   const forceUpdate = React.useCallback(() => updateState({}), []);
 
-  const { setTestStarted } = useContext(TestStartedContext);
+  const { setTestStarted } = useTestStarted();
   const { settings } = useSettings();
 
   const generatePara = () => {
@@ -250,8 +246,8 @@ const Test = ({
   useUpdateEffect(getResult, [seconds]);
 
   useEffect(() => {
-    const test = document.getElementById("test");
-    if (caretPosition.top - 1 > 42) test.scrollTop = caretPosition.top - 43;
+    const words = document.getElementById("wordsWrapper");
+    if (caretPosition.top - 1 > 42) words.scrollTop = caretPosition.top - 43;
   }, [caretPosition.top]);
 
   return (
@@ -273,28 +269,29 @@ const Test = ({
         )}
       </div>
       <div
-        className="flex scroll-smooth flex-wrap gap-2.5 relative h-[116px] overflow-hidden"
-        id="test"
+        id="wordsWrapper"
+        className="h-[116px] overflow-hidden scroll-smooth"
       >
-        <div
-          className={`w-0.5 h-8 bg-secondary absolute transition-all ease-linear duration-100 ${
-            time === 0 && "animate-blink"
-          }`}
-          style={{
-            top: caretPosition.top,
-            left: caretPosition.left || 0,
-          }}
-        ></div>
-        {words.map((word, wIndex) => {
-          return (
-            <div key={wIndex} className="inline">
-              {word.split("").map((char, cIndex) => {
-                const typedWord = typedWords[wIndex];
-                const typedWordLength = typedWord?.length || 0;
+        <div className="flex flex-wrap gap-2.5 relative items-start">
+          <div
+            className={`w-0.5 h-8 bg-secondary absolute transition-all ease-linear duration-100 ${
+              time === 0 && "animate-blink"
+            }`}
+            style={{
+              top: caretPosition.top,
+              left: caretPosition.left || 0,
+            }}
+          ></div>
+          {words.map((word, wIndex) => {
+            return (
+              <div key={wIndex} className="inline">
+                {word.split("").map((char, cIndex) => {
+                  const typedWord = typedWords[wIndex];
+                  const typedWordLength = typedWord?.length || 0;
 
-                return (
-                  <span
-                    className={`text-2xl select-none ${`letter-${wIndex.toString()}-${cIndex.toString()}
+                  return (
+                    <span
+                      className={`text-2xl select-none ${`letter-${wIndex.toString()}-${cIndex.toString()}
                   }`} 
                   
                     ${
@@ -313,24 +310,24 @@ const Test = ({
                         : "text-error"
                     }
                   `}
-                    key={cIndex}
-                  >
-                    {char}
-                  </span>
-                );
-              })}
+                      key={cIndex}
+                    >
+                      {char}
+                    </span>
+                  );
+                })}
 
-              {typedWords[wIndex] &&
-                typedWords[wIndex].length > word.length &&
-                typedWords[wIndex]
-                  .split("")
-                  .slice(word.length)
-                  .map((char, eIndex) => {
-                    return (
-                      <span
-                        className={`text-2xl select-none letter-${wIndex.toString()}-${(
-                          word.length + eIndex
-                        ).toString()}
+                {typedWords[wIndex] &&
+                  typedWords[wIndex].length > word.length &&
+                  typedWords[wIndex]
+                    .split("")
+                    .slice(word.length)
+                    .map((char, eIndex) => {
+                      return (
+                        <span
+                          className={`text-2xl select-none letter-${wIndex.toString()}-${(
+                            word.length + eIndex
+                          ).toString()}
                       } ${
                         getSettingValue("blind mode", settings) === ""
                           ? getSettingValue("flip test colors", settings) ===
@@ -339,28 +336,19 @@ const Test = ({
                             : "text-secondary"
                           : "text-error"
                       }`}
-                        key={`00` + eIndex.toString()}
-                      >
-                        {char}
-                      </span>
-                    );
-                  })}
-            </div>
-          );
-        })}
-      </div>
-      <div className="flex justify-center my-4">
-        <button
-          onClick={restart}
-          disabled={isCompleted}
-          id="restartBtn"
-          className="text-primary hover:text-tertiary text-xl transition-all cursor-pointer w-20 h-14 grid place-items-center rounded-lg focus:text-bgColor focus:bg-tertiary focus:outline-none"
-        >
-          <FontAwesomeIcon icon={faRotateRight} />
-        </button>
+                          key={`00` + eIndex.toString()}
+                        >
+                          {char}
+                        </span>
+                      );
+                    })}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </>
   );
 };
 
-export default Test;
+export default TestArea;

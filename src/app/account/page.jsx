@@ -5,14 +5,12 @@ import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretDown, faUser } from "@fortawesome/free-solid-svg-icons";
 import TestHistoryItem from "./TestHistoryItem";
-import onLoad from "@/utils/onLoad";
-import LoadingPage from "@/components/LoadingPage";
 import BarChart from "./BarChart";
 import LineChart from "./LineChart";
 import { useRouter } from "next/navigation";
 import Spinner from "@/components/Spinner";
-import BestTest from "./BestTest";
 import _debounce from "lodash/debounce";
+import BestTestsInMode from "./BestTestsInMode";
 
 const tableHeadings = [
   { name: "", isSortable: false, onHoverTooltip: false },
@@ -42,41 +40,12 @@ const Account = () => {
     order: "descending",
   });
 
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [colorsLoaded, setColorsLoaded] = useState(false);
-
   const [isLoadingTests, setIsLoadingTests] = useState(false);
 
   const router = useRouter();
 
   useEffect(() => {
-    onLoad(setColorsLoaded);
-
-    const user = JSON.parse(localStorage.getItem("monkey-type-clone-user"));
-
-    if (!user) router.push("/");
-    else {
-      const { email } = user;
-      post("/get-user-data", { email }).then(
-        ({
-          user,
-          tests,
-          isMoreTests,
-          barChartData,
-          allTimeStats,
-          lineChartData,
-        }) => {
-          setUser(user);
-          setAllTimeStats(allTimeStats);
-          setBarChartData(barChartData);
-          setLineChartData(lineChartData);
-          setIsMoreTests(isMoreTests);
-          setTestsHistory(tests);
-
-          setIsLoaded(true);
-        }
-      );
-    }
+    if (!localStorage.getItem("monkey-type-clone-user")) router.push("/");
   }, []);
 
   const loadMoreTests = async () => {
@@ -120,7 +89,7 @@ const Account = () => {
     }
   }, 500);
 
-  return isLoaded ? (
+  return (
     <div className="wrapper my-12">
       <div className="contain flex-col gap-8">
         <div className="bg-bgSecondary flex items-center px-5 py-4 rounded-lg">
@@ -161,17 +130,8 @@ const Account = () => {
         </div>
 
         <div className="flex flex-col mod:flex-row gap-8">
-          <div className="bg-bgSecondary grid grid-cols-2 gap-8 mod:gap-0 sm:grid-cols-4 py-5 mod:px-2 rounded-lg w-full">
-            {user.bestTests.time.map((test, index) => (
-              <BestTest key={index} test={test} mode="seconds" />
-            ))}
-          </div>
-
-          <div className="bg-bgSecondary grid grid-cols-2 gap-8 mod:gap-0 sm:grid-cols-4 py-5 mod:px-2 rounded-lg w-full">
-            {user.bestTests.words.map((test, index) => (
-              <BestTest key={index} test={test} mode="words" />
-            ))}
-          </div>
+          <BestTestsInMode bestTests={user.bestTests} mode="time" />
+          <BestTestsInMode bestTests={user.bestTests} mode="words" />
         </div>
 
         <div className="flex flex-col gap-12">
@@ -258,8 +218,6 @@ const Account = () => {
         </div>
       </div>
     </div>
-  ) : (
-    <LoadingPage colorsLoaded={colorsLoaded} />
   );
 };
 
