@@ -4,6 +4,7 @@ import { Chart as ChartJS } from "chart.js/auto";
 import { AnimatePresence, motion } from "framer-motion";
 import React from "react";
 import createArray from "@/utils/createArray";
+import Overlay from "@/components/Overlay";
 
 const TestHistoryChart = ({
   isActive,
@@ -112,25 +113,14 @@ const TestHistoryChart = ({
   };
 
   return (
-    <AnimatePresence>
-      {isActive && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.125 }}
-          className="fixed inset-0 bg-black bg-opacity-50 z-20 grid place-items-center"
-          onClick={() => setIsActive(false)}
-        >
-          <div
-            className="bg-bgColor w-[90%] max-w-[800px] h-[300px] p-4 rounded-lg"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Line data={chartData} options={options} />
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <Overlay isActive={isActive} setIsActive={setIsActive}>
+      <div
+        className="bg-bgColor w-[90%] max-w-[800px] h-[300px] p-4 rounded-lg"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <Line data={chartData} options={options} />
+      </div>
+    </Overlay>
   );
 };
 

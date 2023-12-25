@@ -10,9 +10,7 @@ import getBarChartData from "./getBarChartData";
 export async function POST(req, res) {
   try {
     await dbConnect();
-    const query = await req.json();
-
-    const { _id: userId, username } = await User.findOne(query);
+    const { userId } = await req.json();
 
     const tests = await Test.find({ userId }).sort({ createdAt: -1 });
 
@@ -25,13 +23,9 @@ export async function POST(req, res) {
     const barChartData = getBarChartData(tests); // getting bar chart data
 
     return NextResponse.json({
-      user: {
-        userId,
-        username,
-        bestTests,
-        timeTyping,
-        totalTestsCompleted: tests.length,
-      },
+      bestTests,
+      timeTyping,
+      totalTestsCompleted: tests.length,
       isMoreTests: tests.length > 10,
       tests: tests.reverse().slice(0, 10),
       allTimeStats,

@@ -1,9 +1,8 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
 import { Chart as ChartJS } from "chart.js/auto";
 import calculateWpm from "@/utils/calulateWpm";
 import { post } from "@/utils/post";
-import { UserContext } from "@/context/User";
 import getColor from "@/utils/getColor";
 import { faRotateRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -12,6 +11,7 @@ import Crown from "@/svg component/Crown";
 import { AnimatePresence, motion } from "framer-motion";
 import { getSettingValue } from "@/utils/getSettingValue";
 import { useSettings } from "@/context/Settings";
+import { useUser } from "@/context/User";
 
 const Result = ({
   result,
@@ -22,7 +22,7 @@ const Result = ({
   modeCategory,
   restart,
 }) => {
-  const { user } = useContext(UserContext);
+  const { user } = useUser();
   const { settings } = useSettings();
 
   const language = getSettingValue("language", settings).replace(/_/g, " ");
@@ -145,7 +145,7 @@ const Result = ({
   }
 
   async function saveTest(testData) {
-    const res = await post("/save-test", { email: user.email, testData });
+    const res = await post("/save-test", { userId: user.id, testData });
     return res;
   }
 
@@ -164,7 +164,7 @@ const Result = ({
   }
 
   useEffect(() => {
-    if (user.email)
+    if (user.id)
       saveTest({
         ...testData,
         wpmEachSecond: [...wpmEachSecond, testData.wpm],

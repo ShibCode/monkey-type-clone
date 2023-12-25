@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
 import { useRouter } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
+
 const Login = () => {
   const router = useRouter();
 
@@ -13,15 +13,12 @@ const Login = () => {
   }, []);
 
   return (
-    
-      <div
-        className="wrapper flex items-center mt-[150px]"
-      >
-        <div className="flex contain justify-around">
-          <SignUp />
-          <SignIn />
-        </div>
+    <div className="wrapper flex items-center">
+      <div className="flex contain justify-around absolute top-1/2 -translate-y-1/2">
+        <SignUp />
+        <SignIn />
       </div>
+    </div>
   );
 };
 

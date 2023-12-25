@@ -11,20 +11,19 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import Logo from "@/svg component/Logo";
-import { useContext } from "react";
-import { UserContext } from "@/context/User";
+import { useUser } from "@/context/User";
 import { useTestStarted } from "@/context/TestStarted";
 import { useRouter } from "next/navigation";
 
 const Header = () => {
-  const { user, updateUser } = useContext(UserContext);
+  const { user, logoutUser } = useUser();
   const { testStarted } = useTestStarted();
 
   const router = useRouter();
 
   return (
     <div className="wrapper relative z-20">
-      <div className="contain items-end h-[55px]">
+      <div className="contain items-end h-[60px]">
         <div className="flex w-full items-end gap-6">
           <Link
             href="/"
@@ -34,12 +33,13 @@ const Header = () => {
             <Logo testStarted={testStarted} />
             <div className="-mb-1">
               <div
-                className={`text-[10px] -mb-3.5 text-primary transition-all duration-150 ${
+                className={`text-primary transition-all duration-150 text-[10px] -mb-3 ${
                   testStarted ? "opacity-0" : "opacity-100"
                 }`}
               >
                 monkey see
               </div>
+
               <div
                 className={`text-3xl transition-all duration-150 ${
                   testStarted ? "text-primary" : "text-tertiary"
@@ -94,7 +94,7 @@ const Header = () => {
             testStarted ? "opacity-0" : "opacity-100"
           }`}
         >
-          {user?.username ? (
+          {user.username ? (
             <>
               <Link
                 tabIndex={-1}
@@ -108,8 +108,7 @@ const Header = () => {
                 tabIndex={-1}
                 className="h-[20px]"
                 onClick={() => {
-                  updateUser({});
-                  localStorage.removeItem("monkey-type-clone-user");
+                  logoutUser();
                   router.push("/login");
                 }}
               >

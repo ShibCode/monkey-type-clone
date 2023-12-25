@@ -6,6 +6,9 @@ import useUpdateEffect from "@/hooks/useUpdateEffect";
 import useTimer from "@/hooks/useTimer";
 import { useSettings } from "@/context/Settings";
 import { getSettingValue } from "@/utils/getSettingValue";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEarthAmerica } from "@fortawesome/free-solid-svg-icons";
+import ChangeLanguageModal from "../ChangeLanguageModal";
 
 const TestArea = ({
   setResult,
@@ -39,7 +42,7 @@ const TestArea = ({
   const [state, updateState] = useState();
   const forceUpdate = React.useCallback(() => updateState({}), []);
 
-  const { setTestStarted } = useTestStarted();
+  const { testStarted, setTestStarted } = useTestStarted();
   const { settings } = useSettings();
 
   const generatePara = () => {
@@ -250,24 +253,49 @@ const TestArea = ({
     if (caretPosition.top - 1 > 42) words.scrollTop = caretPosition.top - 43;
   }, [caretPosition.top]);
 
+  const [languageModalIsActive, setLanguageModalIsActive] = useState(false);
+
   return (
     <>
-      <div
-        className={`text-secondary mb-2 text-2xl flex gap-8 opacity-0  transition-all ${
-          time !== 0 && "opacity-100"
-        }`}
-      >
-        {getSettingValue("live progress", settings) === "show" && (
+      <div className="mb-2 h-8 w-full flex flex-col relative">
+        <div
+          className={`text-secondary flex gap-8 opacity-0 transition-opacity duration-150 text-2xl ${
+            testStarted ? "opacity-100" : "opacity-0"
+          } ${time !== 0 && "opacity-100"}`}
+        >
+          {getSettingValue("live progress", settings) === "show" && (
+            <div>
+              {mode === "words"
+                ? `${position.word}/${totalWords}`
+                : totalTime - seconds}
+            </div>
+          )}
+          {getSettingValue("live speed", settings) === "show" && (
+            <div>{Math.round(latestWpm)}</div>
+          )}
+        </div>
+
+        <div
+          className={`flex justify-center absolute transition-opacity duration-150 w-full h-full items-center ${
+            testStarted ? "opacity-0" : "opacity-100"
+          }`}
+        >
           <div>
-            {mode === "words"
-              ? `${position.word}/${totalWords}`
-              : totalTime - seconds}
+            <button
+              className="text-primary flex items-center gap-4 hover:text-tertiary transition-all duration-150"
+              onClick={() => setLanguageModalIsActive((prev) => !prev)}
+            >
+              <FontAwesomeIcon icon={faEarthAmerica} />
+              <span>english</span>
+            </button>
+            <ChangeLanguageModal
+              isActive={languageModalIsActive}
+              setIsActive={setLanguageModalIsActive}
+            />
           </div>
-        )}
-        {getSettingValue("live speed", settings) === "show" && (
-          <div>{Math.round(latestWpm)}</div>
-        )}
+        </div>
       </div>
+
       <div
         id="wordsWrapper"
         className="h-[116px] overflow-hidden scroll-smooth"
@@ -291,24 +319,26 @@ const TestArea = ({
 
                   return (
                     <span
-                      className={`text-2xl select-none ${`letter-${wIndex.toString()}-${cIndex.toString()}
-                  }`} 
-                  
-                    ${
-                      typedWord && typedWord[cIndex] === char
-                        ? getSettingValue("flip test colors", settings) === "on"
-                          ? "text-primary"
-                          : "text-secondary"
-                        : cIndex >= typedWordLength
-                        ? getSettingValue("flip test colors", settings) === "on"
-                          ? "text-secondary"
-                          : "text-primary"
-                        : getSettingValue("blind mode", settings) === ""
-                        ? getSettingValue("flip test colors", settings) === "on"
-                          ? "text-primary"
-                          : "text-secondary"
-                        : "text-error"
-                    }
+                      className={`text-2xl select-none ${`letter-${wIndex.toString()}-${cIndex.toString()} 
+                      ${
+                        typedWord && typedWord[cIndex] === char
+                          ? getSettingValue("flip test colors", settings) ===
+                            "on"
+                            ? "text-primary"
+                            : "text-secondary"
+                          : cIndex >= typedWordLength
+                          ? getSettingValue("flip test colors", settings) ===
+                            "on"
+                            ? "text-secondary"
+                            : "text-primary"
+                          : getSettingValue("blind mode", settings) === ""
+                          ? getSettingValue("flip test colors", settings) ===
+                            "on"
+                            ? "text-primary"
+                            : "text-secondary"
+                          : "text-error"
+                      }`} 
+                    
                   `}
                       key={cIndex}
                     >

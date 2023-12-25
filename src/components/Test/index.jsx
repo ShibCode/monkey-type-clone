@@ -88,7 +88,7 @@ const Test = () => {
 
   return (
     <div className="wrapper" id="wrapper">
-      <div className="contain py-16">
+      <div className="contain py-12">
         {result.timeTaken ? (
           <Result
             result={result}
@@ -134,17 +134,15 @@ const Test = () => {
                 totalTime={totalTime}
               />
 
-              <div className="flex justify-center my-4">
-                <button
-                  ref={restartBtn}
-                  onClick={duringTestRestart}
-                  disabled={isCompleted}
-                  id="restartBtn"
-                  className="text-primary hover:text-tertiary text-xl transition-all cursor-pointer w-20 h-14 grid place-items-center rounded-lg focus:text-bgColor focus:bg-tertiary focus:outline-none"
-                >
-                  <FontAwesomeIcon icon={faRotateRight} />
-                </button>
-              </div>
+              <button
+                ref={restartBtn}
+                onClick={duringTestRestart}
+                disabled={isCompleted}
+                id="restartBtn"
+                className="text-primary hover:text-tertiary text-xl transition-all cursor-pointer w-20 h-14 grid place-items-center rounded-lg focus:text-bgColor focus:bg-tertiary focus:outline-none mx-auto mt-5"
+              >
+                <FontAwesomeIcon icon={faRotateRight} />
+              </button>
             </div>
           </div>
         )}

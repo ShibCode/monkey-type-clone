@@ -6,43 +6,31 @@ import Spinner from "./Spinner";
 import themes from "@/data/themes";
 import changeTheme from "@/utils/changeTheme";
 import { post } from "@/utils/post";
+import { useStats, useUser } from "@/context/User";
 
-const LoadingPage = ({ setIsLoaded }) => {
-  const [colorsLoaded, setColorsLoaded] = useState(false);
+const LoadingPage = ({ setIsLoaded, colorsLoaded, setColorsLoaded }) => {
+  const { user } = useUser();
+  const { setStats } = useStats();
 
   useEffect(() => {
-    const theme = JSON.parse(localStorage.getItem("monkey-type-clone-theme"));
-    const user = JSON.parse(localStorage.getItem("monkey-type-clone-user"));
+    if (!colorsLoaded) {
+      const theme = JSON.parse(localStorage.getItem("monkey-type-clone-theme"));
 
-    if (theme) changeTheme(Object.keys(theme)[0]);
-    else {
-      const theme = { carbon: themes.carbon };
-      localStorage.setItem("monkey-type-clone-theme", JSON.stringify(theme));
+      if (theme) changeTheme(Object.keys(theme)[0]);
+      else {
+        const theme = { carbon: themes.carbon };
+        localStorage.setItem("monkey-type-clone-theme", JSON.stringify(theme));
+      }
+
+      setColorsLoaded(true);
     }
-
-    setColorsLoaded(true);
 
     if (!user) setIsLoaded(true);
     else {
-      post("/get-user-data", { email: user.email }).then(
-        ({
-          user,
-          tests,
-          isMoreTests,
-          barChartData,
-          allTimeStats,
-          lineChartData,
-        }) => {
-          // setUser(user);
-          // setAllTimeStats(allTimeStats);
-          // setBarChartData(barChartData);
-          // setLineChartData(lineChartData);
-          // setIsMoreTests(isMoreTests);
-          // setTestsHistory(tests);
-
-          setIsLoaded(true);
-        }
-      );
+      post("/get-user-data", { userId: user.id }).then((stats) => {
+        setStats(stats);
+        setIsLoaded(true);
+      });
     }
   }, []);
 

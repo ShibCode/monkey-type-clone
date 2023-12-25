@@ -28,7 +28,7 @@ export async function POST(req, res) {
       });
     }
 
-    await User.create({
+    const createdUser = await User.create({
       username,
       email,
       password: hashedPass,
@@ -38,8 +38,8 @@ export async function POST(req, res) {
       message: "User successfully registered",
       success: true,
       user: {
+        id: createdUser._id,
         username,
-        email,
       },
     });
   } catch (e) {

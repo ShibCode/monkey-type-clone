@@ -8,7 +8,7 @@ import User from "@/context/User";
 import TestStarted from "@/context/TestStarted";
 import Settings from "@/context/Settings";
 import "./globals.css";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 
 const lexendDeca = Lexend_Deca({
@@ -22,6 +22,7 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+  const [colorsLoaded, setColorsLoaded] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
   const path = usePathname();
@@ -32,7 +33,7 @@ export default function RootLayout({ children }) {
         className={`${lexendDeca.className} bg-bgColor`}
         suppressHydrationWarning={true}
       >
-        <User>
+        <User setIsLoaded={setIsLoaded}>
           <Settings>
             <TestStarted>
               {isLoaded ? (
@@ -43,12 +44,17 @@ export default function RootLayout({ children }) {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.1, ease: "linear" }}
+                    className="flex-1 flex"
                   >
                     {children}
                   </motion.div>
                 </>
               ) : (
-                <LoadingPage setIsLoaded={setIsLoaded} />
+                <LoadingPage
+                  setIsLoaded={setIsLoaded}
+                  colorsLoaded={colorsLoaded}
+                  setColorsLoaded={setColorsLoaded}
+                />
               )}
             </TestStarted>
           </Settings>

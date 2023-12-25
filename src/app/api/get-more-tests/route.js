@@ -6,7 +6,7 @@ export async function POST(req, res) {
   try {
     await dbConnect();
 
-    const { _id, totalCurrentTests, sortingCriteria } = await req.json();
+    const { userId, totalCurrentTests, sortingCriteria } = await req.json();
 
     let field = "";
     let order = "";
@@ -17,7 +17,7 @@ export async function POST(req, res) {
     if (sortingCriteria.order === "ascending") order = 1;
     else order = -1;
 
-    const newTests = await Test.find({ userId: _id })
+    const newTests = await Test.find({ userId })
       .sort({ [field]: order })
       .skip(totalCurrentTests)
       .limit(10);

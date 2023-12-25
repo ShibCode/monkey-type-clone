@@ -12,7 +12,7 @@ export async function GET() {
     // const endTime = new Date();
     // const executionTime = endTime - startTime;
 
-    const users = await User.find();
+    const users = await User.find({ email: "shoaibafzaal1234@gmail.com" });
 
     return NextResponse.json({ users });
   } catch (e) {

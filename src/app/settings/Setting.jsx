@@ -4,7 +4,6 @@ import { useSettings } from "@/context/Settings";
 import changeTheme from "@/utils/changeTheme";
 import groups from "../../../public/languages/groups.json";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
 import Dropdown from "./Dropdown";
 
 const Setting = ({

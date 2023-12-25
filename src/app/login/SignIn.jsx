@@ -1,12 +1,12 @@
 "use client";
 
-import { useContext, useState } from "react";
+import { useState } from "react";
 import Input from "./Input";
 import Button from "./Button";
 import { faRightToBracket } from "@fortawesome/free-solid-svg-icons";
 import { post } from "@/utils/post";
-import { UserContext } from "@/context/User";
 import { useRouter } from "next/navigation";
+import { useUser } from "@/context/User";
 
 const SignIn = () => {
   const [userInfo, setUserInfo] = useState({
@@ -16,7 +16,7 @@ const SignIn = () => {
 
   const router = useRouter();
 
-  const { updateUser } = useContext(UserContext);
+  const { loginUser } = useUser();
 
   const handleInput = (e) => {
     setUserInfo((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -28,7 +28,7 @@ const SignIn = () => {
     const res = await post("/login", userInfo);
 
     if (res.success) {
-      updateUser(res.user);
+      loginUser(res.user);
       router.push("/");
     }
   };

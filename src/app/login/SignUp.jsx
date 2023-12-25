@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useContext } from "react";
+import { useState } from "react";
 import Input from "./Input";
 import Button from "./Button";
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import { post } from "@/utils/post";
 import { useRouter } from "next/navigation";
-import { UserContext } from "@/context/User";
+import { useUser } from "@/context/User";
 
 const SignUp = () => {
   const [userInfo, setUserInfo] = useState({
@@ -19,7 +19,7 @@ const SignUp = () => {
 
   const router = useRouter();
 
-  const { updateUser } = useContext(UserContext);
+  const { loginUser } = useUser();
 
   const handleInput = (e) => {
     setUserInfo((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -34,7 +34,7 @@ const SignUp = () => {
     const res = await post("/register", userInfo);
 
     if (res.success) {
-      updateUser(res.user);
+      loginUser(res.user);
       router.push("/");
     }
   };

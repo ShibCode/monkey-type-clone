@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import Spinner from "@/components/Spinner";
 import _debounce from "lodash/debounce";
 import BestTestsInMode from "./BestTestsInMode";
+import { useStats, useUser } from "@/context/User";
 
 const tableHeadings = [
   { name: "", isSortable: false, onHoverTooltip: false },
@@ -28,36 +29,35 @@ const tableHeadings = [
 ];
 
 const Account = () => {
-  const [user, setUser] = useState({});
-  const [allTimeStats, setAllTimeStats] = useState([]);
-  const [barChartData, setBarChartData] = useState({});
-  const [lineChartData, setLineChartData] = useState({});
-  const [testsHistory, setTestsHistory] = useState([]);
-  const [isMoreTests, setIsMoreTests] = useState(false);
-
+  const [isLoadingTests, setIsLoadingTests] = useState(false);
   const [sortingCriteria, setSortingCriteria] = useState({
     field: "date",
     order: "descending",
   });
 
-  const [isLoadingTests, setIsLoadingTests] = useState(false);
-
   const router = useRouter();
 
+  const { user } = useUser();
+  const { stats, setStats } = useStats();
+
   useEffect(() => {
-    if (!localStorage.getItem("monkey-type-clone-user")) router.push("/");
+    if (!user) router.push("/");
   }, []);
 
   const loadMoreTests = async () => {
     setIsLoadingTests(true);
     const { newTests, isMoreTests } = await post("/get-more-tests", {
-      _id: user.userId,
-      totalCurrentTests: testsHistory.length,
+      userId: user.id,
+      totalCurrentTests: stats.tests.length,
       sortingCriteria,
     });
 
-    setTestsHistory((prev) => [...prev, ...newTests]);
-    setIsMoreTests(isMoreTests);
+    setStats((prev) => ({
+      ...prev,
+      isMoreTests,
+      tests: [...prev.tests, ...newTests],
+    }));
+
     setIsLoadingTests(false);
   };
 
@@ -83,9 +83,15 @@ const Account = () => {
       userId: user.userId,
       sortingCriteria: newSortingCriteria,
     });
+
     if (data.success) {
       setTestsHistory(data.tests);
       setIsMoreTests(data.isMoreTests);
+      setStats((prev) => ({
+        ...prev,
+        isMoreTests: data.isMoreTests,
+        tests: data.tests,
+      }));
     }
   }, 500);
 
@@ -113,41 +119,41 @@ const Account = () => {
             <div className="w-full ">
               <h2 className="text-primary text-[14px] -mb-1">test started</h2>
               <p className="text-tertiary text-3xl">
-                {user.totalTestsCompleted}
+                {stats.totalTestsCompleted}
               </p>
             </div>
             <div className="w-full ">
               <h2 className="text-primary text-[14px] -mb-1">test completed</h2>
               <p className="text-tertiary text-3xl">
-                {user.totalTestsCompleted}
+                {stats.totalTestsCompleted}
               </p>
             </div>
             <div className="w-full ">
               <h2 className="text-primary text-[14px] -mb-1">time typing</h2>
-              <p className="text-tertiary text-3xl">{user.timeTyping}</p>
+              <p className="text-tertiary text-3xl">{stats.timeTyping}</p>
             </div>
           </div>
         </div>
 
         <div className="flex flex-col mod:flex-row gap-8">
-          <BestTestsInMode bestTests={user.bestTests} mode="time" />
-          <BestTestsInMode bestTests={user.bestTests} mode="words" />
+          <BestTestsInMode bestTests={stats.bestTests} mode="time" />
+          <BestTestsInMode bestTests={stats.bestTests} mode="words" />
         </div>
 
         <div className="flex flex-col gap-12">
           <div className="h-[400px] w-full">
             <LineChart
-              totalTests={user.totalTestsCompleted}
-              chartData={lineChartData}
+              totalTests={stats.totalTestsCompleted}
+              chartData={stats.lineChartData}
             />
           </div>
           <div className="h-[200px] w-full">
-            <BarChart wpmRange={barChartData} />
+            <BarChart wpmRange={stats.barChartData} />
           </div>
         </div>
 
         <div className="grid grid-cols-allTimeStatsLayout gap-8">
-          {allTimeStats.map((stat, index) => {
+          {stats.allTimeStats.map((stat, index) => {
             return (
               <div key={index}>
                 <h2 className="text-primary">{stat.name || "Test Started"}</h2>
@@ -197,12 +203,12 @@ const Account = () => {
               </tr>
             </thead>
             <tbody>
-              {testsHistory.map((test, index) => (
+              {stats.tests.map((test, index) => (
                 <TestHistoryItem key={index} {...test} index={index} />
               ))}
             </tbody>
           </table>
-          {isMoreTests &&
+          {stats.isMoreTests &&
             (isLoadingTests === false ? (
               <div
                 onClick={loadMoreTests}

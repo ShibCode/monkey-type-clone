@@ -7,9 +7,7 @@ export async function POST(req, res) {
   try {
     await dbConnect();
 
-    const { email, testData } = await req.json();
-
-    const { _id: userId } = await User.findOne({ email }, { _id: 1 });
+    const { userId, testData } = await req.json();
 
     const bestTestInCategory = await Test.findOne({
       userId,
