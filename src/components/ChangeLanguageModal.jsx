@@ -3,21 +3,15 @@ import Overlay from "./Overlay";
 import groups from "../../public/languages/groups";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
-import { getSettingValue } from "@/utils/getSettingValue";
 import { useSettings } from "@/context/Settings";
 
-const ChangeLanguageModal = ({ isActive, setIsActive }) => {
+const ChangeLanguageModal = ({ isActive, setIsActive, duringTestRestart }) => {
   const languages = groups.reduce(
-    (acc, curr) => [
-      ...acc,
-      ...curr.languages.map((language) => language.replace(/_/g, " ")),
-    ],
+    (acc, curr) => [...acc, ...curr.languages.map((language) => language)],
     []
   );
 
-  const { settings } = useSettings();
-
-  console.log(getSettingValue("language", settings));
+  const { getSettingValue, setSettingValue } = useSettings();
 
   return (
     <Overlay isActive={isActive} setIsActive={setIsActive}>
@@ -30,17 +24,21 @@ const ChangeLanguageModal = ({ isActive, setIsActive }) => {
             <li
               className="flex items-center px-6 gap-3 text-primary text-sm h-[30px] bg-transparent hover:bg-tertiary hover:text-bgColor transition-colors duration-150 cursor-pointer"
               key={index}
+              onClick={() => {
+                setSettingValue("language", language);
+                setIsActive(false);
+                duringTestRestart();
+              }}
             >
               <FontAwesomeIcon
                 icon={faCheck}
                 className={
-                  getSettingValue("language", settings).replace(/_/g, " ") ===
-                  language
+                  getSettingValue("language") === language
                     ? "opacity-100 visible"
                     : "opacity-0 invisible"
                 }
               />
-              <span>{language}</span>
+              <span>{language.replace(/_/g, " ")}</span>
             </li>
           ))}
         </ul>

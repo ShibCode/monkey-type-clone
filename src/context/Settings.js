@@ -4,6 +4,7 @@ import useUpdateEffect from "@/hooks/useUpdateEffect";
 import { createContext, useContext, useState } from "react";
 import themes from "@/data/themes";
 import defaultSettings from "@/data/settings";
+import changeTheme from "@/utils/changeTheme";
 
 export const SettingsContext = createContext();
 
@@ -92,6 +93,27 @@ const Settings = ({ children }) => {
     return localStorageSettings;
   });
 
+  const getSettingValue = (settingName) => {
+    return Object.keys(settings).reduce((acc, sectionName) => {
+      return acc ? acc : settings[sectionName][settingName]?.active;
+    }, undefined);
+  };
+
+  const setSettingValue = (settingName, newValue) => {
+    if (settingName === "theme") changeTheme(newValue);
+
+    setSettings((prev) => {
+      const newSettings = Object.keys(prev).reduce((acc, sectionName) => {
+        const setting = acc[sectionName][settingName];
+        if (setting) setting.active = newValue;
+
+        return acc;
+      }, prev);
+
+      return { ...newSettings };
+    });
+  };
+
   useUpdateEffect(() => {
     localStorage.setItem(
       "monkey-type-clone-settings",
@@ -100,7 +122,9 @@ const Settings = ({ children }) => {
   }, [settings]);
 
   return (
-    <SettingsContext.Provider value={{ settings, setSettings }}>
+    <SettingsContext.Provider
+      value={{ settings, setSettingValue, getSettingValue }}
+    >
       {children}
     </SettingsContext.Provider>
   );

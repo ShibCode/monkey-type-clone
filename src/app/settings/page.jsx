@@ -1,6 +1,5 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
 import Section from "./Section";
 import { useSettings } from "@/context/Settings";
 

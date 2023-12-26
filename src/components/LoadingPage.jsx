@@ -25,7 +25,7 @@ const LoadingPage = ({ setIsLoaded, colorsLoaded, setColorsLoaded }) => {
       setColorsLoaded(true);
     }
 
-    if (!user) setIsLoaded(true);
+    if (!user.id) setIsLoaded(true);
     else {
       post("/get-user-data", { userId: user.id }).then((stats) => {
         setStats(stats);

@@ -1,39 +1,14 @@
 import React from "react";
 import themes from "@/data/themes";
 import { useSettings } from "@/context/Settings";
-import changeTheme from "@/utils/changeTheme";
 import groups from "../../../public/languages/groups.json";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Dropdown from "./Dropdown";
 
-const Setting = ({
-  type,
-  icon,
-  title,
-  desc,
-  options,
-  active,
-  sectionHeading,
-}) => {
-  const { setSettings } = useSettings();
+const Setting = ({ type, icon, title, desc, options, active }) => {
+  const { setSettingValue } = useSettings();
 
-  const updateSetting = (newValue) => {
-    if (type === "theme") changeTheme(newValue);
-
-    // only changing the active key
-    setSettings((prev) => {
-      return {
-        ...prev,
-        [sectionHeading]: {
-          ...prev[sectionHeading],
-          [title]: {
-            ...prev[sectionHeading][title],
-            active: newValue,
-          },
-        },
-      };
-    });
-  };
+  const updateSetting = (newValue) => setSettingValue(title, newValue);
 
   return (
     <div className="flex flex-col gap-4">

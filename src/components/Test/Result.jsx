@@ -8,10 +8,9 @@ import { faRotateRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import Crown from "@/svg component/Crown";
-import { AnimatePresence, motion } from "framer-motion";
-import { getSettingValue } from "@/utils/getSettingValue";
+import { AnimatePresence } from "framer-motion";
 import { useSettings } from "@/context/Settings";
-import { useUser } from "@/context/User";
+import { useStats, useUser } from "@/context/User";
 
 const Result = ({
   result,
@@ -23,9 +22,10 @@ const Result = ({
   restart,
 }) => {
   const { user } = useUser();
-  const { settings } = useSettings();
+  const { setStats } = useStats();
+  const { getSettingValue } = useSettings();
 
-  const language = getSettingValue("language", settings).replace(/_/g, " ");
+  const language = getSettingValue("language").replace(/_/g, " ");
 
   const { correct, incorrect, missed, extra, timeTaken } = result;
 
@@ -172,7 +172,14 @@ const Result = ({
         errorsEachSecond,
         language,
       }).then((res) => {
-        if (res.success && res.isPersonalBest) setIsPersonalBest(true);
+        if (!res.success) return;
+        if (res.test.isPersonalBest) setIsPersonalBest(true);
+        setStats((prev) => {
+          prev.tests.unshift(res.test);
+          prev.tests.pop();
+
+          return prev;
+        });
       });
 
     document.addEventListener("keydown", handleKeyDown);

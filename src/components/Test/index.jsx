@@ -132,6 +132,7 @@ const Test = () => {
                 mode={mode}
                 totalWords={totalWords}
                 totalTime={totalTime}
+                duringTestRestart={duringTestRestart}
               />
 
               <button

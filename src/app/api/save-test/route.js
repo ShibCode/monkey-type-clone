@@ -35,7 +35,7 @@ export async function POST(req, res) {
     return NextResponse.json({
       message: "Stats successfully updated",
       success: true,
-      isPersonalBest,
+      test,
     });
   } catch (e) {
     return NextResponse.json({

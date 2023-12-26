@@ -5,7 +5,6 @@ import { useTestStarted } from "@/context/TestStarted";
 import useUpdateEffect from "@/hooks/useUpdateEffect";
 import useTimer from "@/hooks/useTimer";
 import { useSettings } from "@/context/Settings";
-import { getSettingValue } from "@/utils/getSettingValue";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEarthAmerica } from "@fortawesome/free-solid-svg-icons";
 import ChangeLanguageModal from "../ChangeLanguageModal";
@@ -19,6 +18,7 @@ const TestArea = ({
   mode,
   totalWords,
   totalTime,
+  duringTestRestart,
 }) => {
   const [words, setWords] = useState([]);
   const [typedWords, setTypedWords] = useState([]);
@@ -43,10 +43,11 @@ const TestArea = ({
   const forceUpdate = React.useCallback(() => updateState({}), []);
 
   const { testStarted, setTestStarted } = useTestStarted();
-  const { settings } = useSettings();
+
+  const { getSettingValue } = useSettings();
 
   const generatePara = () => {
-    const activeLanguage = getSettingValue("language", settings);
+    const activeLanguage = getSettingValue("language");
 
     fetch(`/languages/${activeLanguage}.json`)
       .then((res) => res.json())
@@ -263,14 +264,14 @@ const TestArea = ({
             testStarted ? "opacity-100" : "opacity-0"
           } ${time !== 0 && "opacity-100"}`}
         >
-          {getSettingValue("live progress", settings) === "show" && (
+          {getSettingValue("live progress") === "show" && (
             <div>
               {mode === "words"
                 ? `${position.word}/${totalWords}`
                 : totalTime - seconds}
             </div>
           )}
-          {getSettingValue("live speed", settings) === "show" && (
+          {getSettingValue("live speed") === "show" && (
             <div>{Math.round(latestWpm)}</div>
           )}
         </div>
@@ -286,11 +287,12 @@ const TestArea = ({
               onClick={() => setLanguageModalIsActive((prev) => !prev)}
             >
               <FontAwesomeIcon icon={faEarthAmerica} />
-              <span>english</span>
+              <span>{getSettingValue("language").replace(/_/g, " ")}</span>
             </button>
             <ChangeLanguageModal
               isActive={languageModalIsActive}
               setIsActive={setLanguageModalIsActive}
+              duringTestRestart={duringTestRestart}
             />
           </div>
         </div>
@@ -322,18 +324,15 @@ const TestArea = ({
                       className={`text-2xl select-none ${`letter-${wIndex.toString()}-${cIndex.toString()} 
                       ${
                         typedWord && typedWord[cIndex] === char
-                          ? getSettingValue("flip test colors", settings) ===
-                            "on"
+                          ? getSettingValue("flip test colors") === "on"
                             ? "text-primary"
                             : "text-secondary"
                           : cIndex >= typedWordLength
-                          ? getSettingValue("flip test colors", settings) ===
-                            "on"
+                          ? getSettingValue("flip test colors") === "on"
                             ? "text-secondary"
                             : "text-primary"
-                          : getSettingValue("blind mode", settings) === ""
-                          ? getSettingValue("flip test colors", settings) ===
-                            "on"
+                          : getSettingValue("blind mode") === ""
+                          ? getSettingValue("flip test colors") === "on"
                             ? "text-primary"
                             : "text-secondary"
                           : "text-error"
@@ -359,9 +358,8 @@ const TestArea = ({
                             word.length + eIndex
                           ).toString()}
                       } ${
-                        getSettingValue("blind mode", settings) === ""
-                          ? getSettingValue("flip test colors", settings) ===
-                            "on"
+                        getSettingValue("blind mode") === ""
+                          ? getSettingValue("flip test colors") === "on"
                             ? "text-primary"
                             : "text-secondary"
                           : "text-error"
