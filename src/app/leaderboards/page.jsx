@@ -89,6 +89,7 @@ const Leaderboards = () => {
               {leaderboards.length > 0 ? (
                 leaderboards.map((test, index) => (
                   <tr
+                    key={index}
                     className={`${
                       index % 2 === 0 ? "bg-bgSecondary" : "bg-transparent"
                     } ${
