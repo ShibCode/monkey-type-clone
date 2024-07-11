@@ -119,6 +119,8 @@ const TestArea = ({
 
       setLatestWpm(wpm);
     }
+
+    return () => {};
   };
 
   const handleKeyDown = (e) => {
@@ -217,6 +219,8 @@ const TestArea = ({
         ];
       });
     }
+
+    return () => {};
   }, [typedWords]);
 
   useEffect(() => {
@@ -246,7 +250,10 @@ const TestArea = ({
     };
   }, []);
 
-  useEffect(() => moveCaret(), [position]);
+  useEffect(() => {
+    moveCaret();
+  }, [position]);
+
   useUpdateEffect(getResult, [seconds]);
 
   useEffect(() => {

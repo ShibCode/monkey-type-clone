@@ -10,11 +10,10 @@ import getBarChartData from "./getBarChartData";
 export async function POST(req, res) {
   try {
     await dbConnect();
+
     const { userId } = await req.json();
 
-    const tests = await Test.find({ userId }).sort({ createdAt: -1 });
-
-    console.log(userId);
+    const tests = await Test.find({ userId }).sort({ createdAt: "descending" });
 
     const seconds = tests.reduce((acc, test) => acc + test.timeTaken, 0); // gets total seconds typed
     const timeTyping = new Date(seconds * 1000).toISOString().slice(11, 19); // converts seconds into formatted time

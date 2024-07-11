@@ -9,6 +9,6 @@ export default function useUpdateEffect(callback, dependencies) {
       return;
     }
 
-    callback();
+    return callback();
   }, dependencies);
 }

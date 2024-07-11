@@ -21,7 +21,11 @@ export default function useTimer(typedWordsLength) {
     if (typedWordsLength !== 0 && time === 0) setReferenceTime(Date.now());
   }, [typedWordsLength]);
 
-  useUpdateEffect(() => setTimeout(countUp, 1), [referenceTime]);
+  useUpdateEffect(() => {
+    setTimeout(countUp, 1);
+
+    return () => {};
+  }, [referenceTime]);
 
   return [time, seconds, setReferenceTime];
 }

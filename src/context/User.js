@@ -15,7 +15,7 @@ export const useStats = () => {
 };
 
 const User = ({ children, setIsLoaded }) => {
-  const [stats, setStats] = useState({});
+  const [stats, setStats] = useState(null);
   const [user, setUser] = useState(() => {
     if (typeof window === "undefined") return {};
 

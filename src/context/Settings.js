@@ -119,6 +119,8 @@ const Settings = ({ children }) => {
       "monkey-type-clone-settings",
       JSON.stringify(settings)
     );
+
+    return () => {};
   }, [settings]);
 
   return (

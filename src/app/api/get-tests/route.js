@@ -6,22 +6,17 @@ export async function POST(req, res) {
   try {
     await dbConnect();
 
-    const { userId, sortingCriteria } = await req.json();
+    const { userId, sortingCriteria, totalCurrentTests } = await req.json();
 
-    let field = "";
-    let order = "";
-
-    if (sortingCriteria.field === "date") field = "createdAt";
-    else field = sortingCriteria.field;
-
-    if (sortingCriteria.order === "ascending") order = 1;
-    else order = -1;
+    const sort = { [sortingCriteria.field]: sortingCriteria.order };
 
     const tests = await Test.find({ userId })
-      .sort({ [field]: order })
+      .sort(sort)
+      .skip(totalCurrentTests)
       .limit(10);
 
-    const isMoreTests = (await Test.countDocuments()) > 10;
+    const isMoreTests =
+      (await Test.countDocuments({ userId })) > totalCurrentTests + 10;
 
     return NextResponse.json({ success: true, tests, isMoreTests });
   } catch (e) {

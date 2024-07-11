@@ -1,17 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Logo from "@/svg component/Logo";
 import Spinner from "./Spinner";
 import themes from "@/data/themes";
 import changeTheme from "@/utils/changeTheme";
-import { post } from "@/utils/post";
-import { useStats, useUser } from "@/context/User";
 
 const LoadingPage = ({ setIsLoaded, colorsLoaded, setColorsLoaded }) => {
-  const { user } = useUser();
-  const { setStats } = useStats();
-
   useEffect(() => {
     if (!colorsLoaded) {
       const theme = JSON.parse(localStorage.getItem("monkey-type-clone-theme"));
@@ -25,13 +20,7 @@ const LoadingPage = ({ setIsLoaded, colorsLoaded, setColorsLoaded }) => {
       setColorsLoaded(true);
     }
 
-    if (!user.id) setIsLoaded(true);
-    else {
-      post("/get-user-data", { userId: user.id }).then((stats) => {
-        setStats(stats);
-        setIsLoaded(true);
-      });
-    }
+    setIsLoaded(true);
   }, []);
 
   return (
@@ -55,7 +44,7 @@ const LoadingPage = ({ setIsLoaded, colorsLoaded, setColorsLoaded }) => {
       </div>
 
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-        <Spinner fill="fill-secondary" />
+        <Spinner />
       </div>
     </div>
   );
