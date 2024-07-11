@@ -1,31 +1,30 @@
-import { useEffect, useState } from "react";
-import useUpdateEffect from "./useUpdateEffect";
+import { useRef, useState } from "react";
 
-export default function useTimer(typedWordsLength) {
+export default function useTimer() {
   const [time, setTime] = useState(0);
-  const [referenceTime, setReferenceTime] = useState(0);
-  const [seconds, setSeconds] = useState(0);
 
-  const countUp = () => {
-    setTime((prevTime) => {
-      const now = Date.now();
-      const interval = now - referenceTime;
-      setReferenceTime(now);
-      setSeconds(Math.floor((prevTime + interval) / 1000));
+  const id = useRef();
 
-      return prevTime + interval;
-    });
+  const updateTime = (currentTime, refTime) => {
+    const newTime = (time + (currentTime - refTime)).toFixed(0);
+
+    if (+newTime > 0) {
+      setTime(+newTime);
+      id.current = requestAnimationFrame((ct) => updateTime(ct, refTime));
+    } else setTime(0);
   };
 
-  useEffect(() => {
-    if (typedWordsLength !== 0 && time === 0) setReferenceTime(Date.now());
-  }, [typedWordsLength]);
+  const start = () => {
+    if (id.current) return;
 
-  useUpdateEffect(() => {
-    setTimeout(countUp, 1);
+    const refTime = performance.now();
+    requestAnimationFrame((ct) => updateTime(ct, refTime));
+  };
 
-    return () => {};
-  }, [referenceTime]);
+  const stop = () => {
+    cancelAnimationFrame(id.current);
+    id.current = null;
+  };
 
-  return [time, seconds, setReferenceTime];
+  return [Math.floor(time / 1000), time, start, stop];
 }

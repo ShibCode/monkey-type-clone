@@ -62,7 +62,7 @@ const Header = () => {
                 className="text-primary hover:text-tertiary cursor-pointer transition-colors duration-75"
               />
             </Link>
-            <Link href="/">
+            <Link href="/leaderboards">
               <FontAwesomeIcon
                 icon={faCrown}
                 width={20}
@@ -109,6 +109,7 @@ const Header = () => {
                 className="h-[20px]"
                 onClick={() => {
                   logoutUser();
+                  sessionStorage.removeItem("stats");
                   router.push("/login");
                 }}
               >

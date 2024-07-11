@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, createContext, useContext } from "react";
+import { useState, createContext, useContext, useEffect } from "react";
 
 const UserContext = createContext();
 
@@ -15,7 +15,13 @@ export const useStats = () => {
 };
 
 const User = ({ children, setIsLoaded }) => {
-  const [stats, setStats] = useState(null);
+  const [stats, setStats] = useState(() => {
+    if (typeof window === "undefined") return null;
+
+    const sessionStorageStats = JSON.parse(sessionStorage.getItem("stats"));
+    if (sessionStorageStats) return sessionStorageStats;
+    return null;
+  });
   const [user, setUser] = useState(() => {
     if (typeof window === "undefined") return {};
 
@@ -37,6 +43,8 @@ const User = ({ children, setIsLoaded }) => {
 
   const logoutUser = () => {
     setUser({});
+    setStats(null);
+    sessionStorage.removeItem("stats");
     localStorage.removeItem("monkey-type-clone-user");
   };
 

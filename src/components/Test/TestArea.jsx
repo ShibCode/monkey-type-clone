@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import validChars from "@/validChars";
 import calculateWpm from "@/utils/calulateWpm";
 import { useTestStarted } from "@/context/TestStarted";
@@ -8,6 +8,8 @@ import { useSettings } from "@/context/Settings";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEarthAmerica } from "@fortawesome/free-solid-svg-icons";
 import ChangeLanguageModal from "../ChangeLanguageModal";
+
+const WORDS_TO_SHOW_FOR_TIME_MODE = 100;
 
 const TestArea = ({
   setResult,
@@ -37,7 +39,7 @@ const TestArea = ({
 
   const [isHoldingControl, setIsHoldingControl] = useState(false);
 
-  const [time, seconds] = useTimer(typedWords.length);
+  const [seconds, time, startTimer, stopTimer] = useTimer();
 
   const [state, updateState] = useState();
   const forceUpdate = React.useCallback(() => updateState({}), []);
@@ -46,27 +48,26 @@ const TestArea = ({
 
   const { getSettingValue } = useSettings();
 
-  const generatePara = () => {
+  const generatePara = async () => {
     const activeLanguage = getSettingValue("language");
+    const words = [];
 
-    fetch(`/languages/${activeLanguage}.json`)
-      .then((res) => res.json())
-      .then((language) => {
-        const words = [];
+    const response = await fetch(`/languages/${activeLanguage}.json`);
+    const language = await response.json();
 
-        const cap = mode === "words" ? totalWords : 100;
+    const cap = mode === "words" ? totalWords : WORDS_TO_SHOW_FOR_TIME_MODE;
 
-        for (let i = 0; i < cap; i++) {
-          let rng = Math.floor(Math.random() * language.words.length);
+    for (let i = 0; i < cap; i++) {
+      let rng = Math.floor(Math.random() * language.words.length);
 
-          if (language.words[rng] === words[words.length - 1]) {
-            rng = Math.floor(Math.random() * language.words.length);
-          }
+      if (language.words[rng] === words[words.length - 1]) {
+        rng = Math.floor(Math.random() * language.words.length);
+      }
 
-          words.push(language.words[rng]);
-        }
-        setWords(words);
-      });
+      words.push(language.words[rng]);
+    }
+
+    return words;
   };
 
   const getResult = (isCompleted = false) => {
@@ -196,53 +197,70 @@ const TestArea = ({
     }
   };
 
+  const wordsUpdatedRef = useRef(false);
+
   useUpdateEffect(() => {
-    const lastWord = typedWords[typedWords.length - 1];
-    const typedLetter = lastWord[lastWord.length - 1];
-
-    const actualWord = words[typedWords.length - 1];
-    const actualLetter = actualWord[lastWord.length - 1];
-
-    if (typedLetter !== actualLetter) {
-      setErrorsEachSecond((prev) => {
-        if (seconds >= prev.length) {
-          return [
-            ...prev,
-            ...new Array(seconds - prev.length).fill(undefined),
-            1,
-          ];
-        }
-
-        return [
-          ...prev.slice(0, prev.length - 1), // gets all elements except last
-          (prev[prev.length - 1] += 1), // adds last element after adding 1
-        ];
+    if (
+      mode === "time" &&
+      typedWords.length === words.length - 0.5 * WORDS_TO_SHOW_FOR_TIME_MODE &&
+      !wordsUpdatedRef.current
+    ) {
+      wordsUpdatedRef.current = true;
+      generatePara().then((words) => {
+        setWords((prev) => [...prev, ...words]);
+        wordsUpdatedRef.current = false;
       });
+    }
+
+    if (typedWords.length !== 0) {
+      const lastWord = typedWords[typedWords.length - 1];
+      const typedLetter = lastWord[lastWord.length - 1];
+
+      const actualWord = words[typedWords.length - 1];
+      const actualLetter = actualWord[lastWord.length - 1];
+
+      if (typedLetter !== actualLetter) {
+        setErrorsEachSecond((prev) => {
+          if (seconds >= prev.length) {
+            return [
+              ...prev,
+              ...new Array(seconds - prev.length).fill(undefined),
+              1,
+            ];
+          }
+
+          return [
+            ...prev.slice(0, prev.length - 1), // gets all elements except last
+            (prev[prev.length - 1] += 1), // adds last element after adding 1
+          ];
+        });
+      }
     }
 
     return () => {};
   }, [typedWords]);
 
   useEffect(() => {
-    if (typedWords.length !== 0 && time === 0) setTestStarted(true);
+    if (typedWords.length !== 0 && time === 0) startTimer();
     else if (
       (mode === "words" &&
         ((typedWords.length === totalWords &&
           typedWords[totalWords - 1].length === words[totalWords - 1].length) ||
           position.word === totalWords)) ||
-      (mode === "time" && seconds === totalTime)
+      (mode === "time" && seconds >= totalTime)
     ) {
+      stopTimer();
       getResult(true);
       setIsCompleted(true);
       setTestStarted(false);
     }
-  }, [position]);
+  }, [position, seconds]);
 
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("keyup", handleKeyUp);
 
-    generatePara();
+    generatePara().then((words) => setWords(words));
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
@@ -265,7 +283,7 @@ const TestArea = ({
 
   return (
     <>
-      <div className="mb-2 h-8 w-full flex flex-col relative">
+      <div className="mb-3 h-8 w-full flex flex-col relative">
         <div
           className={`text-secondary flex gap-8 opacity-0 transition-opacity duration-150 text-2xl ${
             testStarted ? "opacity-100" : "opacity-0"

@@ -21,9 +21,12 @@ const Account = () => {
   useEffect(() => {
     if (!user.id) router.push("/");
 
-    post("/get-user-stats", { userId: user.id }).then((stats) => {
-      setStats(stats);
-    });
+    if (!stats) {
+      post("/get-user-stats", { userId: user.id }).then((stats) => {
+        sessionStorage.setItem("stats", JSON.stringify(stats));
+        setStats(stats);
+      });
+    }
   }, []);
 
   return stats ? (
