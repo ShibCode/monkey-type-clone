@@ -131,7 +131,7 @@ export async function GET() {
       "668fc2ee6a2a652db6819710",
     ];
 
-    return NextResponse.json({ data });
+    return NextResponse.json({ WOAH: "YOU FOUND THE SECRET PAGE" });
   } catch (e) {
     console.log(e);
   }
