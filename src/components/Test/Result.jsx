@@ -10,7 +10,7 @@ import Link from "next/link";
 import Crown from "@/svg component/Crown";
 import { AnimatePresence } from "framer-motion";
 import { useSettings } from "@/context/Settings";
-import { useStats, useUser } from "@/context/User";
+import { useUser } from "@/context/User";
 
 const Result = ({
   result,
@@ -22,7 +22,6 @@ const Result = ({
   restart,
 }) => {
   const { user } = useUser();
-  const { setStats } = useStats();
   const { getSettingValue } = useSettings();
 
   const language = getSettingValue("language").replace(/_/g, " ");
@@ -146,10 +145,7 @@ const Result = ({
 
   async function saveTest(testData) {
     const res = await post("/save-test", { userId: user.id, testData });
-    if (res.success) {
-      sessionStorage.removeItem("stats");
-      setStats(null);
-    }
+    if (res.success) sessionStorage.removeItem("stats");
 
     return res;
   }

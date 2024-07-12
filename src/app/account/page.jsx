@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import BestTestsInMode from "./BestTestsInMode";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
@@ -11,25 +11,55 @@ import { useStats, useUser } from "@/context/User";
 import TestHistory from "./TestHistory";
 import { post } from "@/utils/post";
 import Spinner from "@/components/Spinner";
+import { formatTime } from "@/utils/formatTime";
+
+const allTimeStatsLayout = [
+  "tests started",
+  "tests completed",
+  "time typing",
+  "highest wpm",
+  "avg wpm",
+  "avg wpm (last 10 tests)",
+  "highest raw wpm",
+  "avg raw wpm",
+  "avg raw wpm (last 10 tests)",
+  "highest accuracy",
+  "avg accuracy",
+  "avg accuracy (last 10 tests)",
+];
 
 const Account = () => {
+  const [lineChartData, setLineChartData] = useState(null);
+  const [barChartData, setBarChartData] = useState(null);
+  const [bestTests, setBestTests] = useState(null);
+  const [allTimeStats, setAllTimeStats] = useState(null);
+  const [testHistory, setTestHistory] = useState(null);
+
   const router = useRouter();
 
   const { user } = useUser();
-  const { stats, setStats } = useStats();
 
   useEffect(() => {
     if (!user.id) router.push("/");
 
+    // const stats = JSON.parse(sessionStorage.getItem("stats"));
+    const stats = false;
     if (!stats) {
       post("/get-user-stats", { userId: user.id }).then((stats) => {
         sessionStorage.setItem("stats", JSON.stringify(stats));
-        setStats(stats);
+        setBarChartData(stats.barChartData);
+        setBestTests(stats.bestTests);
+        setAllTimeStats(stats.allTimeStats);
+        setTestHistory({ isMoreTests: stats.isMoreTests, tests: stats.tests });
       });
     }
+
+    post("/get-line-chart-data", { userId: user.id }).then((data) => {
+      setLineChartData(data);
+    });
   }, []);
 
-  return stats ? (
+  return testHistory ? (
     <div className="wrapper my-12">
       <div className="contain flex-col gap-8">
         <div className="bg-bgSecondary flex items-center px-5 py-4 rounded-lg">
@@ -51,53 +81,72 @@ const Account = () => {
 
           <div className="flex w-full px-5">
             <div className="w-full ">
-              <h2 className="text-primary text-[14px] -mb-1">test started</h2>
+              <h2 className="text-primary text-[14px] -mb-1">tests started</h2>
               <p className="text-tertiary text-3xl">
-                {stats.totalTestsCompleted}
+                {allTimeStats["tests started"]}
               </p>
             </div>
             <div className="w-full ">
-              <h2 className="text-primary text-[14px] -mb-1">test completed</h2>
+              <h2 className="text-primary text-[14px] -mb-1">
+                tests completed
+              </h2>
               <p className="text-tertiary text-3xl">
-                {stats.totalTestsCompleted}
+                {allTimeStats["tests completed"]}
               </p>
             </div>
             <div className="w-full ">
               <h2 className="text-primary text-[14px] -mb-1">time typing</h2>
-              <p className="text-tertiary text-3xl">{stats.timeTyping}</p>
+              <p className="text-tertiary text-3xl">
+                {formatTime(allTimeStats["time typing"])}
+              </p>
             </div>
           </div>
         </div>
 
         <div className="flex flex-col mod:flex-row gap-8">
-          <BestTestsInMode bestTests={stats.bestTests} mode="time" />
-          <BestTestsInMode bestTests={stats.bestTests} mode="words" />
+          <BestTestsInMode
+            categories={[15, 30, 60, 120]}
+            bestTests={bestTests}
+            modeName="time"
+          />
+          <BestTestsInMode
+            categories={[10, 25, 50, 100]}
+            bestTests={bestTests}
+            modeName="words"
+          />
         </div>
 
         <div className="flex flex-col gap-12">
-          <div className="h-[400px] w-full">
+          <div className="h-[420px] w-full relative">
             <LineChart
-              totalTests={stats.totalTestsCompleted}
-              chartData={stats.lineChartData}
+              totalTests={allTimeStats["tests completed"]}
+              chartData={lineChartData}
             />
           </div>
-          <div className="h-[200px] w-full">
-            <BarChart wpmRange={stats.barChartData} />
+          <div className="h-[220px] w-full">
+            <BarChart wpmRange={barChartData} />
           </div>
         </div>
 
         <div className="grid grid-cols-allTimeStatsLayout gap-8">
-          {stats.allTimeStats.map((stat, index) => {
+          {allTimeStatsLayout.map((key, index) => {
             return (
               <div key={index}>
-                <h2 className="text-primary">{stat.name || "Test Started"}</h2>
-                <p className="text-tertiary text-5xl">{stat.value || "100"}</p>
+                <h2 className="text-primary">{key}</h2>
+                <p className="text-tertiary text-5xl">
+                  {key === "time typing"
+                    ? formatTime(allTimeStats[key])
+                    : allTimeStats[key]}
+                </p>
               </div>
             );
           })}
         </div>
 
-        <TestHistory />
+        <TestHistory
+          testHistory={testHistory}
+          setTestHistory={setTestHistory}
+        />
       </div>
     </div>
   ) : (

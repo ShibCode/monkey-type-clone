@@ -35,7 +35,7 @@ const SignIn = () => {
 
   return (
     <form
-      className="flex flex-col gap-2 w-full max-w-[200px]"
+      className="flex flex-col gap-2 w-full max-w-[250px]"
       onSubmit={handleSubmit}
     >
       <p className="text-tertiary">login</p>

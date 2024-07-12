@@ -58,7 +58,7 @@ const BarChart = ({ wpmRange }) => {
     return max / 5;
   }
 
-  return <Bar data={chartData} options={options} />;
+  return <Bar data={chartData} options={options} className="p-2" />;
 };
 
 export default BarChart;

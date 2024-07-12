@@ -3,7 +3,7 @@ import useUpdateEffect from "@/hooks/useUpdateEffect";
 import TestHistoryChart from "./TestHistoryChart";
 import Spinner from "@/components/Spinner";
 import Crown from "@/svg component/Crown";
-import { useStats, useUser } from "@/context/User";
+import { useUser } from "@/context/User";
 import { post } from "@/utils/post";
 import { tableHeadings } from "./data";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -13,7 +13,7 @@ import {
   faEarthAmericas,
 } from "@fortawesome/free-solid-svg-icons";
 
-const TestHistory = () => {
+const TestHistory = ({ testHistory, setTestHistory }) => {
   const [sortingCriteria, setSortingCriteria] = useState({
     field: "createdAt", // date
     order: "descending",
@@ -22,7 +22,6 @@ const TestHistory = () => {
   const [isLoadingTests, setIsLoadingTests] = useState(false);
 
   const { user } = useUser();
-  const { stats, setStats } = useStats();
 
   const updateSort = (heading) => {
     setSortingCriteria((prev) => {
@@ -37,30 +36,28 @@ const TestHistory = () => {
     });
   };
 
-  const updateTests = async (type, setLoadingState = () => {}) => {
-    setLoadingState(true);
+  const updateTests = async (type) => {
+    if (type === "LOAD") setIsLoadingTests(true);
 
     const data = await post("/get-tests", {
       userId: user.id,
       sortingCriteria,
-      totalCurrentTests: type === "LOAD" ? stats.tests.length : 0,
+      totalCurrentTests: type === "LOAD" ? testHistory.tests.length : 0,
     });
 
     if (data.success) {
-      setStats((prev) => ({
-        ...prev,
+      setTestHistory((prev) => ({
         isMoreTests: data.isMoreTests,
         tests: type === "LOAD" ? [...prev.tests, ...data.tests] : data.tests,
       }));
     }
 
-    setLoadingState(false);
+    if (type === "LOAD") setIsLoadingTests(false);
   };
 
   useUpdateEffect(() => {
     const id = setTimeout(updateTests, 500);
     return () => {
-      console.log("asd");
       clearTimeout(id);
     };
   }, [sortingCriteria]);
@@ -107,15 +104,15 @@ const TestHistory = () => {
           </tr>
         </thead>
         <tbody>
-          {stats.tests.map((test, index) => (
+          {testHistory.tests.map((test, index) => (
             <TestHistoryItem key={index} test={test} index={index} />
           ))}
         </tbody>
       </table>
-      {stats.isMoreTests &&
+      {testHistory.isMoreTests &&
         (isLoadingTests === false ? (
           <div
-            onClick={() => updateTests("LOAD", setIsLoadingTests)}
+            onClick={() => updateTests("LOAD")}
             className="bg-bgSecondary text-tertiary hover:bg-tertiary hover:text-bgColor cursor-pointer transition-all duration-[250] grid place-items-center rounded-lg h-[40px] mt-4"
           >
             load more

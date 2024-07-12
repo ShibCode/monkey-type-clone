@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 export async function POST(req, res) {
   try {
     await dbConnect();
+    const start = new Date();
 
     const { userId, sortingCriteria, totalCurrentTests } = await req.json();
 
@@ -18,6 +19,7 @@ export async function POST(req, res) {
     const isMoreTests =
       (await Test.countDocuments({ userId })) > totalCurrentTests + 10;
 
+    console.log(new Date() - start);
     return NextResponse.json({ success: true, tests, isMoreTests });
   } catch (e) {
     return NextResponse.json({
