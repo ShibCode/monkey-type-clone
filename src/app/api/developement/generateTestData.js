@@ -23,20 +23,53 @@ const modes = [
 //   worldClass: [150, 200],
 // };
 
-const ranges = [
-  [0, 20],
-  [20, 40],
-  [40, 60],
-  [60, 80],
-  [80, 100],
-  [100, 120],
-  [120, 150],
-  [150, 200],
-];
+const levels = {
+  beginner: 40,
+  average: 60,
+  aboveAverage: 90,
+  fast: 110,
+  professional: 130,
+  extremelyFast: 150,
+  worldClass: 180,
+  exceptional: 210,
+};
+
+const getWpm = (level) => {
+  const levelIndex = Object.keys(levels).indexOf(level);
+  const mean = levels[level];
+  const stdDev = 7 + levelIndex * 2; // Standard deviation calculation
+
+  // Generate a normally distributed random value
+  const wpm = Math.round(normalRandom(mean, stdDev));
+  return Math.max(0, wpm); // Ensure WPM is non-negative
+};
+
+// Normal distribution function using Box-Muller transform
+const normalRandom = (mean, stdDev) => {
+  let u1 = Math.random();
+  let u2 = Math.random();
+  let z = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+  return z * stdDev + mean;
+};
 
 const languages = ["english"];
 
 export const generateTestData = (users, length = 10) => {
+  // // wpm = wpm
+  // //   .map((i) => Math.floor(i / 10))
+  // //   .reduce((acc, curr) => {
+  // //     if (acc[curr]) acc[curr] += 1;
+  // //     else acc[curr] = 1;
+  // //     return acc;
+  // //   }, {});
+
+  // // wpm = Object.entries(wpm).map(([key, value]) => [
+  // //   `${+key * 10}-${+key * 10 + 9}`,
+  // //   value,
+  // // ]);
+
+  // // wpm = Object.fromEntries(wpm);
+
   const tests = [];
 
   // Date range for the past year (milliseconds)
@@ -49,9 +82,9 @@ export const generateTestData = (users, length = 10) => {
     const userId = chosenOne._id;
     const mode = modes[Math.floor(Math.random() * 4)];
 
-    const range = ranges[Math.floor(Math.random() * ranges.length)];
+    const range = levels[Math.floor(Math.random() * levels.length)];
 
-    const wpm = getRandomNumber(...range); // Random WPM
+    const wpm = getWpm(chosenOne.level); // Random WPM
     const accuracy = getRandomNumber(90, 100); // Random accuracy percentage
     const raw = wpm / (accuracy / 100); // Calculate raw WPM based on accuracy
 

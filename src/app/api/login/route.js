@@ -17,10 +17,7 @@ export async function POST(req, res) {
 
   if (!existingUser) return invalidCredentials();
 
-  const isSamePass =
-    password === "test"
-      ? true
-      : await bcrypt.compare(password, existingUser.password);
+  const isSamePass = await bcrypt.compare(password, existingUser.password);
 
   if (!isSamePass) return invalidCredentials();
 

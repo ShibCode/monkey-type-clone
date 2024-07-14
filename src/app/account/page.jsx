@@ -69,7 +69,16 @@ const Account = () => {
               />
             </div>
             <div>
-              <h2 className="text-tertiary text-[34px]">{user.username}</h2>
+              <h2
+                style={{
+                  fontSize: `min(${17 / user.username.length}vw , ${
+                    260 / user.username.length
+                  }px)`,
+                }}
+                className="text-tertiary"
+              >
+                {user.username}
+              </h2>
 
               <p className="text-primary text-xs">Joined 4 Jun 3030</p>
             </div>

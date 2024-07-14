@@ -103,7 +103,7 @@ const Header = () => {
                 className="h-[20px] flex items-center gap-1 text-primary hover:text-tertiary transition-colors duration-75"
               >
                 <FontAwesomeIcon icon={faUser} width={20} height={20} />
-                <span className="text-sm">{user.username}</span>
+                <span className="text-sm w-max">{user.username}</span>
               </Link>
               <button
                 tabIndex={-1}
