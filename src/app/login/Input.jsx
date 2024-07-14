@@ -1,4 +1,5 @@
 import Spinner from "@/components/Spinner";
+import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 
@@ -10,8 +11,10 @@ const Input = ({
   value,
   notValid = null,
   tooltip = null,
-  icons = null,
+  required = false,
 }) => {
+  const icons = { valid: faCheck, invalid: faXmark };
+
   if (notValid === undefined) return;
 
   return (
@@ -21,16 +24,16 @@ const Input = ({
         name={name}
         placeholder={placeholder}
         onChange={onChange}
+        required={required}
         value={value}
-        autoComplete=""
         className="text-tertiary caret-secondary w-full h-full pl-2 rounded-md placeholder:text-primary outline-none bg-bgSecondary focus-visible:outline-1 focus-visible:outline-tertiary focus-visible:outline"
       />
 
       {notValid !== null && (
         <div
-          tooltip={tooltip ? tooltip : ""}
-          className={`!absolute right-0 flex items-center justify-center size-[33px] ${
-            tooltip ? "hover-tooltip" : ""
+          tooltip={tooltip && value && tooltip}
+          className={`!absolute right-0 flex items-center justify-center size-[33px] bg-bgSecondary ${
+            tooltip && value ? "hover-tooltip" : ""
           }`}
         >
           {value &&

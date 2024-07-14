@@ -3,10 +3,35 @@ import { User } from "@/model/user";
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 
+const returnInvalid = () => {
+  return NextResponse.json({
+    success: false,
+    message: "Registration failed!",
+  });
+};
+
 export async function POST(req, res) {
   try {
     await dbConnect();
-    const { username, email, password } = await req.json();
+
+    const usernameFormat = /^[a-zA-Z-_0-9]+$/;
+    const passwordFormat = /(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])/;
+    const emailFormat = /^[^\s@]+@[a-zA-Z-]+\.[a-zA-Z]{2,}$/;
+
+    const { username, email, password, verifyEmail, verifyPassword } =
+      await req.json();
+
+    // if any fields are empty
+    if (!username || !email || !password || !verifyEmail || !verifyPassword)
+      return returnInvalid();
+
+    if (email !== verifyEmail || password !== verifyPassword)
+      return returnInvalid(); // if email or password do not match
+    if (!usernameFormat.test(username) || username.length > 16)
+      return returnInvalid(); // username validation
+    if (password.length < 8 || !passwordFormat.test(password))
+      return returnInvalid(); // password validation
+    if (!emailFormat.test(email)) return returnInvalid(); // email validation
 
     const hashedPass = await bcrypt.hash(password, 10);
 
@@ -14,7 +39,7 @@ export async function POST(req, res) {
 
     if (existingUsername) {
       return NextResponse.json({
-        message: "Username already exists",
+        message: "Username already exists!",
         success: false,
       });
     }
@@ -23,7 +48,7 @@ export async function POST(req, res) {
 
     if (existingEmail) {
       return NextResponse.json({
-        message: "E-mail is already registered",
+        message: "Email is already registered!",
         success: false,
       });
     }
@@ -35,7 +60,7 @@ export async function POST(req, res) {
     });
 
     return NextResponse.json({
-      message: "User successfully registered",
+      message: "Account registered!",
       success: true,
       user: {
         id: createdUser._id,
@@ -44,7 +69,7 @@ export async function POST(req, res) {
     });
   } catch (e) {
     return NextResponse.json({
-      message: "Something went wrong",
+      message: "Internal server error",
       success: false,
     });
   }

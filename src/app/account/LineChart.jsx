@@ -74,6 +74,7 @@ const LineChart = ({ totalTests, chartData }) => {
       },
       y: {
         position: "right",
+        min: 0,
         ticks: {
           color: getColor("primary"),
           stepSize: 10,

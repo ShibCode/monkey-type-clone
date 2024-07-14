@@ -143,10 +143,17 @@ const Result = ({
     return i / 4;
   }
 
-  async function saveTest(testData) {
-    const res = await post("/save-test", { userId: user.id, testData });
-    if (res.success) sessionStorage.removeItem("stats");
-
+  async function saveTest() {
+    const res = await post("/save-test", {
+      userId: user.id,
+      testData: {
+        ...testData,
+        wpmEachSecond: [...wpmEachSecond, testData.wpm],
+        rawWpmEachSecond: [...rawWpmEachSecond, testData.raw],
+        errorsEachSecond,
+        language,
+      },
+    });
     return res;
   }
 
@@ -166,13 +173,7 @@ const Result = ({
 
   useEffect(() => {
     if (user.id)
-      saveTest({
-        ...testData,
-        wpmEachSecond: [...wpmEachSecond, testData.wpm],
-        rawWpmEachSecond: [...rawWpmEachSecond, testData.raw],
-        errorsEachSecond,
-        language,
-      }).then((res) => {
+      saveTest().then((res) => {
         if (!res.success) return;
         if (res.test.isPersonalBest) setIsPersonalBest(true);
       });

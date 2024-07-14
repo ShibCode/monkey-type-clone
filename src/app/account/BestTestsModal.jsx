@@ -1,7 +1,7 @@
 import React from "react";
 import Overlay from "@/components/Overlay";
 
-const BestTestsModal = ({ isActive, setIsActive, tests, mode }) => {
+const BestTestsModal = ({ isActive, setIsActive, tests, modeName }) => {
   return (
     <Overlay isActive={isActive} setIsActive={setIsActive}>
       <div
@@ -11,7 +11,7 @@ const BestTestsModal = ({ isActive, setIsActive, tests, mode }) => {
         <table className="w-full text-right">
           <thead>
             <tr className="text-primary text-xs">
-              <td className="p-2">{mode}</td>
+              <td className="p-2">{modeName}</td>
               <td className="p-2">wpm</td>
               <td className="p-2">raw</td>
               <td className="p-2">accuracy</td>
@@ -20,9 +20,11 @@ const BestTestsModal = ({ isActive, setIsActive, tests, mode }) => {
             </tr>
           </thead>
           <tbody>
-            {tests.map((test, index) => (
-              <TableRow key={index} {...test} index={index} />
-            ))}
+            {tests
+              .sort((a, b) => new Date(b.date) - new Date(a.date))
+              .map((test, index) => (
+                <TableRow key={index} {...test} index={index} />
+              ))}
           </tbody>
         </table>
       </div>

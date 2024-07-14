@@ -2,8 +2,6 @@
 
 import Test from "@/components/Test";
 
-const Home = () => {
-  return <Test />;
-};
+const Home = () => <Test />;
 
 export default Home;

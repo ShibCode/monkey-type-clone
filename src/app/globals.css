@@ -53,7 +53,7 @@ body {
     @apply w-full flex justify-center;
   }
   .contain {
-    @apply max-w-[1200px] w-[90%] flex;
+    @apply max-w-[1400px] w-[90%] flex;
   }
   .settings-section {
     @apply flex flex-col gap-6 w-full overflow-hidden;

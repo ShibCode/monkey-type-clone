@@ -9,6 +9,8 @@ export async function POST(req, res) {
 
     const { userId, testData } = await req.json();
 
+    const start = new Date();
+
     const bestTestInCategory = await Test.findOne({
       userId,
       mode: testData.mode,
@@ -31,6 +33,8 @@ export async function POST(req, res) {
     });
 
     await test.save();
+
+    console.log(new Date() - start);
 
     return NextResponse.json({
       message: "Stats successfully updated",

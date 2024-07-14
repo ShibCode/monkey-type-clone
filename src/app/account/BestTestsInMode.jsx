@@ -3,15 +3,26 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
 import BestTestsModal from "./BestTestsModal";
 
-const BestTestsInMode = ({ categories, bestTests, modeName }) => {
+const categories = {
+  time: ["15", "30", "60", "120"],
+  words: ["10", "25", "50", "100"],
+};
+
+const BestTestsInMode = ({ bestTests, modeName }) => {
   const [isShowingModal, setIsShowingModal] = useState(false);
+
+  const summarised = bestTests.summarised.filter(
+    (test) => test.mode.name === modeName
+  );
+
+  const detailed = bestTests.detailed.filter(
+    (test) => test.mode.name === modeName
+  );
 
   return (
     <div className="bg-bgSecondary grid grid-cols-2 gap-8 mod:gap-0 sm:grid-cols-4 py-5 mod:pl-2 pr-8 rounded-lg w-full relative">
-      {categories.map((category, index) => {
-        const test = bestTests.summarised.find(
-          (t) => t.mode.category === category
-        );
+      {categories[modeName].map((category, index) => {
+        const test = summarised.find((t) => t.mode.category == category);
 
         return (
           <BestTest
@@ -33,8 +44,8 @@ const BestTestsInMode = ({ categories, bestTests, modeName }) => {
         <BestTestsModal
           isActive={isShowingModal}
           setIsActive={setIsShowingModal}
-          tests={bestTests.detailed[mode]}
-          mode={mode}
+          tests={detailed}
+          modeName={modeName}
         />
       )}
     </div>

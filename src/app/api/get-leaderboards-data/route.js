@@ -29,32 +29,42 @@ export async function POST(req, res) {
     }
 
     const top10 = await Test.aggregate([
-      // Match documents with the specified mode.name and mode.category
       {
         $match: {
           "mode.name": activeCategory.mode.name,
           "mode.category": activeCategory.mode.category,
         },
       },
-      // Sort by userId and wpm in descending order
-      { $sort: { userId: 1, wpm: -1 } },
-      // Group by userId and take the first document in each group (the one with the highest wpm)
+      { $sort: { wpm: -1 } },
       { $group: { _id: "$userId", fastestTest: { $first: "$$ROOT" } } },
-      // Replace the root with the fastestTest document
       { $replaceRoot: { newRoot: "$fastestTest" } },
-      // Lookup user details from the User collection
+      { $sort: { wpm: -1 } },
       {
         $lookup: {
-          from: "users", // The collection where user details are stored
-          localField: "userId", // The field from the Test collection
-          foreignField: "_id", // The field from the User collection
-          as: "userDetails", // The name of the field where the user details will be added
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
+          pipeline: [{ $project: { _id: 0, username: 1 } }],
         },
       },
-      // Unwind the userDetails array to get a single user document
-      { $unwind: "$userDetails" },
-      // Optionally, sort by wpm in descending order
-      { $sort: { wpm: -1 } },
+      { $unwind: "$user" },
+      { $set: { username: "$user.username" } },
+      { $unset: ["user"] },
+      {
+        $project: {
+          userId: 0,
+          timeTaken: 0,
+          wpmEachSecond: 0,
+          rawWpmEachSecond: 0,
+          errorsEachSecond: 0,
+          isPersonalBest: 0,
+          mode: 0,
+          language: 0,
+          __v: 0,
+          _id: 0,
+        },
+      },
     ]);
 
     return NextResponse.json({ success: true, leaderboardsData: top10 });

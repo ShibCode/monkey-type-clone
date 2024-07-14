@@ -7,16 +7,18 @@ import { faRightToBracket } from "@fortawesome/free-solid-svg-icons";
 import { post } from "@/utils/post";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/context/User";
+import createToast from "@/utils/createToast";
 
 const SignIn = () => {
   const [userInfo, setUserInfo] = useState({
     email: "",
     password: "",
   });
+  const [isFetching, setIsFetching] = useState(false);
 
   const router = useRouter();
 
-  const { loginUser } = useUser();
+  const { login } = useUser();
 
   const handleInput = (e) => {
     setUserInfo((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -25,12 +27,17 @@ const SignIn = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    setIsFetching(true);
     const res = await post("/login", userInfo);
+    setIsFetching(false);
 
     if (res.success) {
-      loginUser(res.user);
       router.push("/");
-    }
+      createToast(res.message, "success");
+      login(res.user);
+    } else createToast(res.message, "error");
+
+    setUserInfo({ email: "", password: "" });
   };
 
   return (
@@ -44,6 +51,7 @@ const SignIn = () => {
         placeholder="email"
         value={userInfo.email}
         onChange={handleInput}
+        required
       />
       <Input
         type="password"
@@ -51,8 +59,9 @@ const SignIn = () => {
         placeholder="password"
         value={userInfo.password}
         onChange={handleInput}
+        required
       />
-      <Button text="Sign In" icon={faRightToBracket} />
+      <Button text="Sign In" icon={faRightToBracket} isLoading={isFetching} />
     </form>
   );
 };

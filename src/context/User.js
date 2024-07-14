@@ -4,10 +4,7 @@ import { useState, createContext, useContext, useEffect } from "react";
 
 const UserContext = createContext();
 
-export const useUser = () => {
-  const { user, loginUser, logoutUser } = useContext(UserContext);
-  return { user, loginUser, logoutUser };
-};
+export const useUser = () => useContext(UserContext);
 
 const User = ({ children, setIsLoaded }) => {
   const [user, setUser] = useState(() => {
@@ -20,8 +17,7 @@ const User = ({ children, setIsLoaded }) => {
     return localStorageUser ? localStorageUser : {};
   });
 
-  const loginUser = ({ id, username }) => {
-    setIsLoaded(false);
+  const login = ({ id, username }) => {
     setUser({ id, username });
     localStorage.setItem(
       "monkey-type-clone-user",
@@ -29,14 +25,13 @@ const User = ({ children, setIsLoaded }) => {
     );
   };
 
-  const logoutUser = () => {
+  const logout = () => {
     setUser({});
-    sessionStorage.removeItem("stats");
     localStorage.removeItem("monkey-type-clone-user");
   };
 
   return (
-    <UserContext.Provider value={{ user, loginUser, logoutUser }}>
+    <UserContext.Provider value={{ user, login, logout }}>
       {children}
     </UserContext.Provider>
   );

@@ -1,25 +1,57 @@
 // Function to generate a random number within a range
 const getRandomNumber = (min, max) => Math.random() * (max - min) + min;
 
-export const generateTestData = (userIds, length = 10) => {
+const modes = [
+  { name: "words", category: 10 },
+  { name: "words", category: 25 },
+  { name: "words", category: 50 },
+  { name: "words", category: 100 },
+  { name: "time", category: 15 },
+  { name: "time", category: 30 },
+  { name: "time", category: 60 },
+  { name: "time", category: 120 },
+];
+
+// const ranges = {
+//   beginner: [0, 20],
+//   slow: [20, 40],
+//   average: [40, 60],
+//   aboveAverage: [60, 80],
+//   fast: [80, 100],
+//   professional: [100, 120],
+//   extremelyFast: [120, 150],
+//   worldClass: [150, 200],
+// };
+
+const ranges = [
+  [0, 20],
+  [20, 40],
+  [40, 60],
+  [60, 80],
+  [80, 100],
+  [100, 120],
+  [120, 150],
+  [150, 200],
+];
+
+const languages = ["english"];
+
+export const generateTestData = (users, length = 10) => {
   const tests = [];
-  const modes = [
-    { name: "words", category: 10 },
-    { name: "words", category: 25 },
-    { name: "words", category: 50 },
-    { name: "words", category: 100 },
-  ];
-  const languages = ["english"];
 
   // Date range for the past year (milliseconds)
   const startDate = new Date().setFullYear(new Date().getFullYear() - 1);
   const endDate = Date.now();
 
   for (let i = 0; i < length; i++) {
-    const userId = userIds[Math.floor(Math.random() * userIds.length)];
+    const chosenOne = users[Math.floor(Math.random() * users.length)];
+
+    const userId = chosenOne._id;
     const mode = modes[Math.floor(Math.random() * 4)];
 
-    const wpm = getRandomNumber(120, 160); // Random WPM
+    const range = ranges[Math.floor(Math.random() * ranges.length)];
+
+    const wpm = getRandomNumber(...range); // Random WPM
     const accuracy = getRandomNumber(90, 100); // Random accuracy percentage
     const raw = wpm / (accuracy / 100); // Calculate raw WPM based on accuracy
 

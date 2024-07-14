@@ -42,11 +42,9 @@ const Account = () => {
   useEffect(() => {
     if (!user.id) router.push("/");
 
-    // const stats = JSON.parse(sessionStorage.getItem("stats"));
     const stats = false;
     if (!stats) {
       post("/get-user-stats", { userId: user.id }).then((stats) => {
-        sessionStorage.setItem("stats", JSON.stringify(stats));
         setBarChartData(stats.barChartData);
         setBestTests(stats.bestTests);
         setAllTimeStats(stats.allTimeStats);
@@ -104,16 +102,8 @@ const Account = () => {
         </div>
 
         <div className="flex flex-col mod:flex-row gap-8">
-          <BestTestsInMode
-            categories={[15, 30, 60, 120]}
-            bestTests={bestTests}
-            modeName="time"
-          />
-          <BestTestsInMode
-            categories={[10, 25, 50, 100]}
-            bestTests={bestTests}
-            modeName="words"
-          />
+          <BestTestsInMode bestTests={bestTests} modeName="time" />
+          <BestTestsInMode bestTests={bestTests} modeName="words" />
         </div>
 
         <div className="flex flex-col gap-12">

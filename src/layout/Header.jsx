@@ -14,9 +14,10 @@ import Logo from "@/svg component/Logo";
 import { useUser } from "@/context/User";
 import { useTestStarted } from "@/context/TestStarted";
 import { useRouter } from "next/navigation";
+import createToast from "@/utils/createToast";
 
 const Header = () => {
-  const { user, logoutUser } = useUser();
+  const { user, logout } = useUser();
   const { testStarted } = useTestStarted();
 
   const router = useRouter();
@@ -108,8 +109,8 @@ const Header = () => {
                 tabIndex={-1}
                 className="h-[20px]"
                 onClick={() => {
-                  logoutUser();
-                  sessionStorage.removeItem("stats");
+                  logout();
+                  createToast("Logged out", "notice");
                   router.push("/login");
                 }}
               >

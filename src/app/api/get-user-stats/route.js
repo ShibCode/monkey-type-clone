@@ -13,13 +13,7 @@ export async function POST(req, res) {
     function getAllTimeStats() {
       return new Promise((resolve) => {
         Test.aggregate([
-          {
-            $match: {
-              $expr: {
-                $eq: ["$userId", { $toObjectId: userId }],
-              },
-            },
-          },
+          { $match: { $expr: { $eq: ["$userId", { $toObjectId: userId }] } } },
           {
             $group: {
               _id: "$userId",
@@ -49,7 +43,19 @@ export async function POST(req, res) {
             },
           },
         ]).then((result) => {
-          resolve(result[0]);
+          resolve(
+            result[0] ?? {
+              "tests started": 0,
+              "tests completed": 0,
+              "time typing": 0,
+              "highest wpm": 0,
+              "avg wpm": 0,
+              "highest raw wpm": 0,
+              "avg raw wpm": 0,
+              "highest accuracy": 0,
+              "avg accuracy": 0,
+            }
+          );
         });
       });
     }
@@ -151,9 +157,11 @@ export async function POST(req, res) {
               groupBy: "$wpm",
               boundaries: [
                 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140,
-                150, 160, 170, 180, 190, 200,
+                150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270,
+                280, 290, 300, 310, 320, 330, 340, 350, 360, 370, 380, 390, 400,
+                410, 420, 430, 440, 450, 460, 470, 480, 490, 500,
               ],
-              default: "Other",
+              default: "Error",
             },
           },
         ]).then((result) => {
@@ -161,7 +169,8 @@ export async function POST(req, res) {
             return { lb: range._id, count: range.count };
           });
 
-          const repititions = raw[raw.length - 1].lb / 10 + 1;
+          const repititions =
+            raw.length > 0 ? raw[raw.length - 1].lb / 10 + 1 : 0;
 
           const data = new Array(repititions).fill(0).reduce((acc, _, i) => {
             const lb = i * 10;
@@ -177,15 +186,12 @@ export async function POST(req, res) {
       });
     }
 
-  
-
     const promises = {
       allTimeStats: getAllTimeStats(),
       summarisedBestTests: getSummarisedBestTests(),
       detailedBestTests: getDetailedBestTests(),
       last10: getLast10Tests(),
       barChartData: getBarChartData(),
-      // lineChartData: getLineChartData(),
     };
 
     const result = (await Promise.all(Object.values(promises))).reduce(
@@ -197,6 +203,9 @@ export async function POST(req, res) {
 
     const getAverageStat = (stat) => {
       const total = result.last10.reduce((acc, test) => acc + test[stat], 0);
+
+      if (result.last10.length === 0) return 0;
+
       return (total / result.last10.length).toFixed(2);
     };
 
@@ -214,10 +223,9 @@ export async function POST(req, res) {
       isMoreTests: result.allTimeStats["tests completed"] > 10,
       tests: result.last10,
       barChartData: result.barChartData,
-      // lineChartData: result.lineChartData,
     };
 
-    console.log(Date.now() - start);
+    console.log("User Stats: ", Date.now() - start);
 
     return NextResponse.json({ ...response });
   } catch (error) {

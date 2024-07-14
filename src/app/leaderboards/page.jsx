@@ -50,6 +50,8 @@ const Leaderboards = () => {
   return (
     <div className="wrapper my-12">
       <div className="contain flex-col gap-8">
+        <h1 className="text-tertiary text-5xl mb-2">Leaderboards</h1>
+
         <div className="flex gap-2">
           {CATEGORIES.map((category, index) => (
             <button
@@ -93,7 +95,7 @@ const Leaderboards = () => {
                     className={`${
                       index % 2 === 0 ? "bg-bgSecondary" : "bg-transparent"
                     } ${
-                      test.userDetails._id === user.id
+                      test.username === user.username
                         ? "text-secondary"
                         : "text-tertiary"
                     }`}
@@ -107,7 +109,7 @@ const Leaderboards = () => {
                         )}
                       </div>
                     </td>
-                    <td className="p-2">{test.userDetails.username}</td>
+                    <td className="p-2">{test.username}</td>
                     <td className="p-2">{test.wpm}</td>
                     <td className="p-2">{test.raw}</td>
                     <td className="p-2">{test.accuracy}%</td>

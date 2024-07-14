@@ -15,6 +15,8 @@ if (!cached) {
 }
 
 const dbConnect = async () => {
+  const start = new Date();
+
   if (cached.conn) {
     return cached.conn;
   }
@@ -36,6 +38,8 @@ const dbConnect = async () => {
     cached.promise = null;
     throw e;
   }
+
+  console.log(`Connected to MongoDB in ${new Date() - start}ms`);
 
   return cached.conn;
 };

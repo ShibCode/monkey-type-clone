@@ -68,8 +68,7 @@ export async function POST(req, res) {
         },
       },
     ]);
-
-    console.log("Time taken: ", new Date() - start);
+    console.log("Line Chart: ", Date.now() - start);
 
     return NextResponse.json(data);
   } catch (error) {
