@@ -5,9 +5,9 @@ import { NextResponse } from "next/server";
 export async function POST(req, res) {
   try {
     await dbConnect();
-    const start = new Date();
 
-    const { userId, sortingCriteria, totalCurrentTests } = await req.json();
+    const { userId, sortingCriteria, totalCurrentTests, type } =
+      await req.json();
 
     const sort = { [sortingCriteria.field]: sortingCriteria.order };
 
@@ -17,9 +17,10 @@ export async function POST(req, res) {
       .limit(10);
 
     const isMoreTests =
-      (await Test.countDocuments({ userId })) > totalCurrentTests + 10;
+      type === "LOAD"
+        ? (await Test.countDocuments({ userId })) > totalCurrentTests + 10
+        : undefined;
 
-    console.log(new Date() - start);
     return NextResponse.json({ success: true, tests, isMoreTests });
   } catch (e) {
     return NextResponse.json({

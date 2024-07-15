@@ -32,7 +32,7 @@ const Header = () => {
             tabIndex={-1}
           >
             <Logo testStarted={testStarted} />
-            <div className="-mb-1">
+            <div className="-mb-1 relative">
               <div
                 className={`text-primary transition-all duration-150 text-[10px] -mb-3 ${
                   testStarted ? "opacity-0" : "opacity-100"
@@ -47,6 +47,10 @@ const Header = () => {
                 }`}
               >
                 monkeytype
+              </div>
+
+              <div className="absolute text-tertiary text-xs right-0 -bottom-[11px]">
+                clone
               </div>
             </div>
           </Link>

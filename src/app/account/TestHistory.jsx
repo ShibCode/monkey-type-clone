@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import useUpdateEffect from "@/hooks/useUpdateEffect";
-import TestHistoryChart from "./TestHistoryChart";
 import Spinner from "@/components/Spinner";
 import Crown from "@/svg component/Crown";
 import { useUser } from "@/context/User";
@@ -9,7 +8,6 @@ import { tableHeadings } from "./data";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCaretDown,
-  faChartLine,
   faEarthAmericas,
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -43,20 +41,25 @@ const TestHistory = ({ testHistory, setTestHistory }) => {
       userId: user.id,
       sortingCriteria,
       totalCurrentTests: type === "LOAD" ? testHistory.tests.length : 0,
+      type,
     });
 
-    if (data.success) {
+    if (!data.success) return;
+
+    if (type === "LOAD") {
       setTestHistory((prev) => ({
         isMoreTests: data.isMoreTests,
-        tests: type === "LOAD" ? [...prev.tests, ...data.tests] : data.tests,
+        tests: [...prev.tests, ...data.tests],
       }));
-    }
 
-    if (type === "LOAD") setIsLoadingTests(false);
+      setIsLoadingTests(false);
+    } else {
+      setTestHistory((prev) => ({ ...prev, tests: data.tests }));
+    }
   };
 
   useUpdateEffect(() => {
-    const id = setTimeout(updateTests, 500);
+    const id = setTimeout(updateTests, 200);
     return () => {
       clearTimeout(id);
     };
@@ -129,8 +132,6 @@ const TestHistory = ({ testHistory, setTestHistory }) => {
 export default TestHistory;
 
 const TestHistoryItem = ({ test, index }) => {
-  const [isShowingChart, setIsShowingChart] = useState(false);
-
   return (
     <tr
       className={`text-tertiary ${
@@ -140,7 +141,7 @@ const TestHistoryItem = ({ test, index }) => {
       <td className="p-2 pl-4">
         {test.isPersonalBest && <Crown className="w-5" />}
       </td>
-      <td className="p-2">{test.wpm}</td>
+      <td className="p-2">{test.wpm.toFixed(2)}</td>
       <td className="p-2">{test.raw}</td>
       <td className="p-2">{test.accuracy}%</td>
       <td className="p-2">
@@ -154,21 +155,7 @@ const TestHistoryItem = ({ test, index }) => {
           <div tooltip={test.language} className="hover-tooltip">
             <FontAwesomeIcon icon={faEarthAmericas} />
           </div>
-
-          <button
-            tooltip="View graph"
-            className="hover-tooltip"
-            onClick={() => setIsShowingChart(true)}
-          >
-            <FontAwesomeIcon icon={faChartLine} />
-          </button>
         </div>
-
-        <TestHistoryChart
-          isActive={isShowingChart}
-          setIsActive={setIsShowingChart}
-          {...test}
-        />
       </td>
       <td className="p-2 pr-4">
         <div>{test.date}</div>

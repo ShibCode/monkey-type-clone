@@ -9,7 +9,20 @@ export async function POST(req, res) {
 
     const { userId, testData } = await req.json();
 
-    const start = new Date();
+    // check if wpm * 5 * (4.25 / 60) approximately equals 'correct'
+    const isCorrect =
+      Math.abs(
+        testData.correct - testData.wpm * 5 * (testData.timeTaken / 60)
+      ) < 0.01 &&
+      Math.abs(
+        testData.correct +
+          testData.incorrect -
+          testData.raw * 5 * (testData.timeTaken / 60)
+      ) < 0.01;
+
+    if (!isCorrect) {
+      return NextResponse.json({ message: "Invalid data", success: false });
+    }
 
     const bestTestInCategory = await Test.findOne({
       userId,
@@ -26,20 +39,12 @@ export async function POST(req, res) {
 
     const isPersonalBest = getIsPersonalBest();
 
-    const test = new Test({
-      userId,
-      ...testData,
-      isPersonalBest,
-    });
-
-    await test.save();
-
-    console.log(new Date() - start);
+    Test.insertMany([{ userId, ...testData, isPersonalBest }]);
 
     return NextResponse.json({
       message: "Stats successfully updated",
       success: true,
-      test,
+      isPersonalBest,
     });
   } catch (e) {
     return NextResponse.json({

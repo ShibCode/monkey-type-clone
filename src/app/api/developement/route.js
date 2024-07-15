@@ -1,5 +1,5 @@
 import TestStarted from "@/context/TestStarted";
-import { Test } from "@/model/test";
+
 import { User } from "@/model/user";
 import dbConnect from "@/utils/dbConn";
 import { NextResponse } from "next/server";
@@ -7,6 +7,7 @@ import { generateTestData } from "./generateTestData";
 import { formatTime } from "@/utils/formatTime";
 import { model } from "mongoose";
 import bcrypt from "bcrypt";
+import { Test } from "@/model/test";
 
 const levels = [
   "beginner",
@@ -128,14 +129,15 @@ export async function GET() {
 
     const start = new Date();
 
-    const tests = generateTestData(users, 100000);
+    const activeMode = { name: "words", category: 10 };
 
-    const data = await Test.insertMany(tests);
+    const data = [];
 
     const timeTaken = new Date() - start;
 
     return NextResponse.json({ timeTaken, data });
   } catch (e) {
     console.log(e);
+    return NextResponse.json({ e });
   }
 }

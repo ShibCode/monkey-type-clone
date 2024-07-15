@@ -11,6 +11,7 @@ import Crown from "@/svg component/Crown";
 import { AnimatePresence } from "framer-motion";
 import { useSettings } from "@/context/Settings";
 import { useUser } from "@/context/User";
+import createToast from "@/utils/createToast";
 
 const Result = ({
   result,
@@ -146,14 +147,9 @@ const Result = ({
   async function saveTest() {
     const res = await post("/save-test", {
       userId: user.id,
-      testData: {
-        ...testData,
-        wpmEachSecond: [...wpmEachSecond, testData.wpm],
-        rawWpmEachSecond: [...rawWpmEachSecond, testData.raw],
-        errorsEachSecond,
-        language,
-      },
+      testData: { ...testData, language },
     });
+    createToast(res.message, res.success ? "success" : "error");
     return res;
   }
 
@@ -175,7 +171,7 @@ const Result = ({
     if (user.id)
       saveTest().then((res) => {
         if (!res.success) return;
-        if (res.test.isPersonalBest) setIsPersonalBest(true);
+        if (res.isPersonalBest) setIsPersonalBest(true);
       });
 
     document.addEventListener("keydown", handleKeyDown);

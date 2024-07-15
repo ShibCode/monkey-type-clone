@@ -63,13 +63,7 @@ export async function POST(req, res) {
     function getSummarisedBestTests() {
       return new Promise((resolve) => {
         Test.aggregate([
-          {
-            $match: {
-              $expr: {
-                $eq: ["$userId", { $toObjectId: userId }],
-              },
-            },
-          },
+          { $match: { $expr: { $eq: ["$userId", { $toObjectId: userId }] } } },
           { $sort: { wpm: -1 } },
           {
             $group: {
@@ -93,13 +87,7 @@ export async function POST(req, res) {
     function getDetailedBestTests() {
       return new Promise((resolve) => {
         Test.aggregate([
-          {
-            $match: {
-              $expr: {
-                $eq: ["$userId", { $toObjectId: userId }],
-              },
-            },
-          },
+          { $match: { $expr: { $eq: ["$userId", { $toObjectId: userId }] } } },
           { $sort: { wpm: -1 } },
           {
             $group: {
@@ -145,13 +133,7 @@ export async function POST(req, res) {
     function getBarChartData() {
       return new Promise((resolve) => {
         Test.aggregate([
-          {
-            $match: {
-              $expr: {
-                $eq: ["$userId", { $toObjectId: userId }],
-              },
-            },
-          },
+          { $match: { $expr: { $eq: ["$userId", { $toObjectId: userId }] } } },
           {
             $bucket: {
               groupBy: "$wpm",

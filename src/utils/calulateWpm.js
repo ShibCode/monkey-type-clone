@@ -1,5 +1,5 @@
-const calculateWpm = (correct, timetaken) => {
-  return parseFloat(correct / 5 / (timetaken / 60)).toFixed(2);
+const calculateWpm = (letters, timetaken) => {
+  return parseFloat(letters / 5 / (timetaken / 60)).toFixed(2);
 };
 
 export default calculateWpm;

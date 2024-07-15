@@ -8,6 +8,7 @@ import { useSettings } from "@/context/Settings";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEarthAmerica } from "@fortawesome/free-solid-svg-icons";
 import ChangeLanguageModal from "../ChangeLanguageModal";
+import { useLanguage } from "@/context/Language";
 
 const WORDS_TO_SHOW_FOR_TIME_MODE = 100;
 
@@ -45,15 +46,11 @@ const TestArea = ({
   const forceUpdate = React.useCallback(() => updateState({}), []);
 
   const { testStarted, setTestStarted } = useTestStarted();
-
   const { getSettingValue } = useSettings();
+  const language = useLanguage();
 
   const generatePara = async () => {
-    const activeLanguage = getSettingValue("language");
     const words = [];
-
-    const response = await fetch(`/languages/${activeLanguage}.json`);
-    const language = await response.json();
 
     const cap = mode === "words" ? totalWords : WORDS_TO_SHOW_FOR_TIME_MODE;
 

@@ -41,18 +41,6 @@ const testSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    wpmEachSecond: {
-      type: [Number],
-      required: true,
-    },
-    rawWpmEachSecond: {
-      type: [Number],
-      required: true,
-    },
-    errorsEachSecond: {
-      type: [Number],
-      required: true,
-    },
     mode: {
       name: {
         type: String,

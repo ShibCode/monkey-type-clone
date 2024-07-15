@@ -8,7 +8,7 @@ import { faCrown } from "@fortawesome/free-solid-svg-icons";
 import { post } from "@/utils/post";
 import { useUser } from "@/context/User";
 
-const CATEGORIES = [
+const MODES = [
   "Words 10",
   "Words 25",
   "Words 50",
@@ -20,32 +20,32 @@ const CATEGORIES = [
 ];
 
 const Leaderboards = () => {
-  const [activeCategory, setActiveCategory] = useState(CATEGORIES[0]);
+  const [activeMode, setActiveMode] = useState(MODES[0]);
   const [leaderboards, setLeaderboards] = useState(null);
   const [isFetching, setIsFetching] = useState(true);
 
   const { user } = useUser();
 
   const fetchData = async () => {
-    const response = await post("/get-leaderboards-data", {
-      category: activeCategory,
-    });
+    const response = await post("/get-leaderboards-data", { mode: activeMode });
 
     if (response.success) setLeaderboards(response.leaderboardsData);
-    else setActiveCategory(CATEGORIES[0]);
+    // else setActiveMode(MODES[0]);
 
     setIsFetching(false);
   };
 
-  const changeCategory = (category) => {
+  const changeActiveMode = (mode) => {
     setIsFetching(true);
-    setActiveCategory(category);
+    setActiveMode(mode);
   };
 
   useEffect(() => {
     const id = setTimeout(fetchData, 500);
-    return () => clearInterval(id);
-  }, [activeCategory]);
+    return () => {
+      clearInterval(id);
+    };
+  }, [activeMode]);
 
   return (
     <div className="wrapper my-12">
@@ -53,17 +53,17 @@ const Leaderboards = () => {
         <h1 className="text-tertiary text-5xl mb-2">Leaderboards</h1>
 
         <div className="flex gap-2">
-          {CATEGORIES.map((category, index) => (
+          {MODES.map((mode, index) => (
             <button
               key={index}
-              onClick={() => changeCategory(category)}
+              onClick={() => changeActiveMode(mode)}
               className={`px-4 py-2 rounded-lg ${
-                category === activeCategory
+                mode === activeMode
                   ? "bg-tertiary text-bgSecondary"
                   : "bg-bgSecondary text-tertiary"
               }`}
             >
-              {category}
+              {mode}
             </button>
           ))}
         </div>

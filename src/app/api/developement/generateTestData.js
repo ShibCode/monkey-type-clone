@@ -82,8 +82,6 @@ export const generateTestData = (users, length = 10) => {
     const userId = chosenOne._id;
     const mode = modes[Math.floor(Math.random() * 4)];
 
-    const range = levels[Math.floor(Math.random() * levels.length)];
-
     const wpm = getWpm(chosenOne.level); // Random WPM
     const accuracy = getRandomNumber(90, 100); // Random accuracy percentage
     const raw = wpm / (accuracy / 100); // Calculate raw WPM based on accuracy
@@ -95,22 +93,6 @@ export const generateTestData = (users, length = 10) => {
     const extra = Math.floor((getRandomNumber(0, 2) * mode.category) / 10);
 
     const timeTaken = 12 * (total / wpm);
-
-    // Calculate number of seconds and arrays based on time taken
-    const numSeconds = Math.ceil(timeTaken) - 1;
-    const wpmEachSecond = Array.from({ length: numSeconds }, () =>
-      getRandomNumber(wpm - 10, wpm + 10)
-    );
-    wpmEachSecond.push(wpm);
-    const rawWpmEachSecond = Array.from({ length: numSeconds }, () =>
-      getRandomNumber(raw - 10, raw + 10)
-    );
-    wpmEachSecond.push(raw);
-    const errorsEachSecond = Array.from({ length: numSeconds + 1 }, () => {
-      const odd = getRandomNumber(1, 3);
-      if (odd < 2) return null;
-      else return Math.floor(getRandomNumber(1, 6));
-    });
 
     // Random date and time within the past year
     const testDate = new Date(getRandomNumber(startDate, endDate));
@@ -136,11 +118,6 @@ export const generateTestData = (users, length = 10) => {
       missed: missed,
       extra: extra,
       timeTaken: parseFloat(timeTaken.toFixed(2)),
-      wpmEachSecond: wpmEachSecond.map((wpm) => parseFloat(wpm.toFixed(2))),
-      rawWpmEachSecond: rawWpmEachSecond.map((raw) =>
-        parseFloat(raw.toFixed(2))
-      ),
-      errorsEachSecond: errorsEachSecond,
       language: languages[Math.floor(Math.random() * languages.length)],
       isPersonalBest: isPersonalBest,
       date: date,
