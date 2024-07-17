@@ -8,7 +8,7 @@ const Settings = () => {
 
   return (
     <div id="settingsPage" className="wrapper mt-14">
-      <div className="max-w-[calc(1200px+50px)] w-[calc(90%+50px)] flex flex-col gap-4">
+      <div className="max-w-[calc(1400px+50px)] w-[calc(90%+50px)] flex flex-col gap-4">
         {Object.keys(settings).map((sectionName, index) => {
           const sectionSettings = settings[sectionName];
 

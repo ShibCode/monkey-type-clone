@@ -94,6 +94,7 @@ const Settings = ({ children }) => {
   });
 
   const getSettingValue = (settingName) => {
+    if (!settings) return;
     return Object.keys(settings).reduce((acc, sectionName) => {
       return acc ? acc : settings[sectionName][settingName]?.active;
     }, undefined);

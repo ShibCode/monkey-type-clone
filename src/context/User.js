@@ -1,34 +1,50 @@
 "use client";
 
 import { useState, createContext, useContext, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import nookies from "nookies";
 
 const UserContext = createContext();
 
 export const useUser = () => useContext(UserContext);
 
-const User = ({ children, setIsLoaded }) => {
-  const [user, setUser] = useState(() => {
-    if (typeof window === "undefined") return {};
+const User = ({ children }) => {
+  const [user, setUser] = useState();
 
-    const localStorageUser = JSON.parse(
-      localStorage.getItem("monkey-type-clone-user")
-    );
+  const router = useRouter();
 
-    return localStorageUser ? localStorageUser : {};
-  });
+  const fetchUser = async (token) => {
+    const response = await fetch("/api/auth", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-  const login = ({ id, username }) => {
-    setUser({ id, username });
-    localStorage.setItem(
-      "monkey-type-clone-user",
-      JSON.stringify({ id, username })
-    );
+    const data = await response.json();
+
+    if (data.success) setUser(data.user);
+    else logout();
   };
 
-  const logout = () => {
-    setUser({});
-    localStorage.removeItem("monkey-type-clone-user");
-  };
+  useEffect(() => {
+    const { token } = nookies.get();
+
+    if (token) fetchUser(token);
+    else setUser(null);
+  }, []);
+
+  function login(user, token) {
+    router.push("/");
+    setUser(user);
+    nookies.set(null, "token", token);
+  }
+
+  function logout() {
+    router.push("/login");
+    setUser(null);
+    nookies.destroy(null, "token");
+  }
 
   return (
     <UserContext.Provider value={{ user, login, logout }}>

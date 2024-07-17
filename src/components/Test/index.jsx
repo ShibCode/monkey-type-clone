@@ -6,20 +6,17 @@ import { useTestStarted } from "@/context/TestStarted";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRotateRight } from "@fortawesome/free-solid-svg-icons";
 
-const TEST_RESTART_ANIMATION_DURATION = 100;
+const TEST_RESTART_DURATION = 100;
+
+export const MODES = {
+  words: [10, 25, 50, 100],
+  time: [15, 30, 60, 120],
+};
 
 const Test = () => {
-  const [mode, setMode] = useState("words");
-  const [totalWords, setTotalWords] = useState(10);
-  const [totalTime, setTotalTime] = useState(15);
+  const [mode, setMode] = useState({ name: "words", category: 10 });
 
-  const [result, setResult] = useState({
-    correct: 0,
-    extra: 0,
-    incorrect: 0,
-    missed: 0,
-    timeTaken: 0,
-  });
+  const [result, setResult] = useState(null);
 
   const [wpmEachSecond, setWpmEachSecond] = useState([]);
   const [rawWpmEachSecond, setRawWpmEachSecond] = useState([]);
@@ -38,7 +35,7 @@ const Test = () => {
     setWpmEachSecond([]);
     setRawWpmEachSecond([]);
     setErrorsEachSecond([]);
-    setResult({});
+    setResult(null);
     setIsCompleted(false);
     setTestStarted(false);
   };
@@ -49,7 +46,7 @@ const Test = () => {
 
       setTimeout(() => {
         restartBtn.current.disabled = false;
-      }, TEST_RESTART_ANIMATION_DURATION);
+      }, TEST_RESTART_DURATION);
     }
   }, []);
 
@@ -65,38 +62,27 @@ const Test = () => {
       setWpmEachSecond([]);
       setRawWpmEachSecond([]);
       setErrorsEachSecond([]);
-      setResult({});
+      setResult(null);
       setTestStarted(false);
       setIsCompleted(false);
-    }, TEST_RESTART_ANIMATION_DURATION);
+    }, TEST_RESTART_DURATION);
   };
 
-  const changeMode = (mode) => {
-    setMode(mode);
-    duringTestRestart();
-  };
-
-  const updateTotalWords = (totalWords) => {
-    setTotalWords(totalWords);
-    duringTestRestart();
-  };
-
-  const updateTotalTime = (totalTime) => {
-    setTotalTime(totalTime);
+  const changeMode = (name, category) => {
+    setMode({ name, category });
     duringTestRestart();
   };
 
   return (
     <div className="wrapper" id="wrapper">
       <div className="contain py-12">
-        {result.timeTaken ? (
+        {result ? (
           <Result
             result={result}
             wpmEachSecond={wpmEachSecond}
             rawWpmEachSecond={rawWpmEachSecond}
             errorsEachSecond={errorsEachSecond}
             mode={mode}
-            modeCategory={mode === "words" ? totalWords : totalTime}
             restart={restart}
           />
         ) : (
@@ -106,20 +92,11 @@ const Test = () => {
               isCompleted && "opacity-0"
             }`}
           >
-            <Controls
-              changeMode={changeMode}
-              updateTotalWords={updateTotalWords}
-              updateTotalTime={updateTotalTime}
-              totalWords={totalWords}
-              totalTime={totalTime}
-              mode={mode}
-            />
+            <Controls mode={mode} changeMode={changeMode} />
 
             <div
               id="testSection"
-              style={{
-                transitionDuration: `${TEST_RESTART_ANIMATION_DURATION}ms`,
-              }}
+              style={{ transitionDuration: `${TEST_RESTART_DURATION}ms` }}
               className="transition-all ease-linear py-16 animate-fadeIn"
             >
               <TestArea
@@ -130,8 +107,6 @@ const Test = () => {
                 setRawWpmEachSecond={setRawWpmEachSecond}
                 setErrorsEachSecond={setErrorsEachSecond}
                 mode={mode}
-                totalWords={totalWords}
-                totalTime={totalTime}
                 duringTestRestart={duringTestRestart}
               />
 

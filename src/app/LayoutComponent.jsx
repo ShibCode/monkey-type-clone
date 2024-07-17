@@ -6,17 +6,14 @@ import LoadingPage from "@/components/LoadingPage";
 import User from "@/context/User";
 import TestStarted from "@/context/TestStarted";
 import Settings from "@/context/Settings";
-import { motion } from "framer-motion";
-import { usePathname } from "next/navigation";
 import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import Language from "@/context/Language";
+import "react-toastify/dist/ReactToastify.css";
+import Footer from "@/layout/Footer";
 
 const LayoutComponent = ({ children }) => {
   const [colorsLoaded, setColorsLoaded] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
-
-  const path = usePathname();
 
   return (
     <>
@@ -27,22 +24,15 @@ const LayoutComponent = ({ children }) => {
         closeButton={false}
       />
 
-      <User setIsLoaded={setIsLoaded}>
+      <User>
         <Settings>
           <Language>
             <TestStarted>
               {isLoaded ? (
                 <>
                   <Header />
-                  <motion.div
-                    key={path}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.1, ease: "linear" }}
-                    className="flex-1 flex"
-                  >
-                    {children}
-                  </motion.div>
+                  {children}
+                  <Footer />
                 </>
               ) : (
                 <LoadingPage

@@ -5,7 +5,6 @@ import Input from "./Input";
 import Button from "./Button";
 import { faRightToBracket } from "@fortawesome/free-solid-svg-icons";
 import { post } from "@/utils/post";
-import { useRouter } from "next/navigation";
 import { useUser } from "@/context/User";
 import createToast from "@/utils/createToast";
 
@@ -15,8 +14,6 @@ const SignIn = () => {
     password: "",
   });
   const [isFetching, setIsFetching] = useState(false);
-
-  const router = useRouter();
 
   const { login } = useUser();
 
@@ -32,9 +29,8 @@ const SignIn = () => {
     setIsFetching(false);
 
     if (res.success) {
-      router.push("/");
       createToast(res.message, "success");
-      login(res.user);
+      login(res.user, res.token);
     } else createToast(res.message, "error");
 
     setUserInfo({ email: "", password: "" });

@@ -21,9 +21,12 @@ export async function POST(req, res) {
 
   if (!isSamePass) return invalidCredentials();
 
+  const token = await existingUser.generateToken();
+
   return NextResponse.json({
     message: "Logged in",
     success: true,
-    user: { id: existingUser._id, username: existingUser.username },
+    user: { _id: existingUser._id, username: existingUser.username, email },
+    token,
   });
 }

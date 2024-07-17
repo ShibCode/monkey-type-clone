@@ -59,13 +59,13 @@ export async function POST(req, res) {
       password: hashedPass,
     });
 
+    const token = await createdUser.generateToken();
+
     return NextResponse.json({
       message: "Account registered!",
       success: true,
-      user: {
-        id: createdUser._id,
-        username,
-      },
+      user: { _id: createdUser._id, username, email },
+      token,
     });
   } catch (e) {
     return NextResponse.json({

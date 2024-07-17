@@ -13,14 +13,11 @@ import Link from "next/link";
 import Logo from "@/svg component/Logo";
 import { useUser } from "@/context/User";
 import { useTestStarted } from "@/context/TestStarted";
-import { useRouter } from "next/navigation";
 import createToast from "@/utils/createToast";
 
 const Header = () => {
   const { user, logout } = useUser();
   const { testStarted } = useTestStarted();
-
-  const router = useRouter();
 
   return (
     <div className="wrapper relative z-20">
@@ -49,7 +46,11 @@ const Header = () => {
                 monkeytype
               </div>
 
-              <div className="absolute text-tertiary text-xs right-0 -bottom-[11px]">
+              <div
+                className={`absolute text-tertiary text-xs right-0 -bottom-[11px] transition-all duration-150 ${
+                  testStarted ? "opacity-0" : "opacity-100"
+                }`}
+              >
                 clone
               </div>
             </div>
@@ -99,7 +100,7 @@ const Header = () => {
             testStarted ? "opacity-0" : "opacity-100"
           }`}
         >
-          {user.username ? (
+          {user ? (
             <>
               <Link
                 tabIndex={-1}
@@ -115,7 +116,6 @@ const Header = () => {
                 onClick={() => {
                   logout();
                   createToast("Logged out", "notice");
-                  router.push("/login");
                 }}
               >
                 <FontAwesomeIcon

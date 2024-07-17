@@ -29,7 +29,7 @@ const Dropdown = ({ active, groups, updateSetting }) => {
       </button>
 
       {isExpanded && (
-        <div className="bg-bgColor border border-bgSecondary absolute max-h-[194px] overflow-auto shadow-lg translate-y-[38px] w-[calc(90%*1/3)] max-w-[400px] rounded-lg">
+        <div className="bg-bgColor border border-bgSecondary absolute max-h-[194px] overflow-auto shadow-lg translate-y-[38px] w-[calc(90%*1/3)] max-w-[400px] rounded-lg space-y-2">
           {groups.map((group, index) => (
             <div key={index}>
               <div

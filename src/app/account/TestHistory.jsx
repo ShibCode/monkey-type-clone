@@ -38,7 +38,7 @@ const TestHistory = ({ testHistory, setTestHistory }) => {
     if (type === "LOAD") setIsLoadingTests(true);
 
     const data = await post("/get-tests", {
-      userId: user.id,
+      userId: user._id,
       sortingCriteria,
       totalCurrentTests: type === "LOAD" ? testHistory.tests.length : 0,
       type,

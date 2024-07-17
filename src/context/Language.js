@@ -1,6 +1,5 @@
 "use client";
 
-import { getSettingValue } from "@/utils/getSettingValue";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useSettings } from "./Settings";
 

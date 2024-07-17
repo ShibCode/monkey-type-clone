@@ -5,8 +5,15 @@ import Logo from "@/svg component/Logo";
 import Spinner from "./Spinner";
 import themes from "@/data/themes";
 import changeTheme from "@/utils/changeTheme";
+import { useLanguage } from "@/context/Language";
+import { useUser } from "@/context/User";
+
+const start = new Date();
 
 const LoadingPage = ({ setIsLoaded, colorsLoaded, setColorsLoaded }) => {
+  const language = useLanguage();
+  const { user } = useUser();
+
   useEffect(() => {
     if (!colorsLoaded) {
       const theme = JSON.parse(localStorage.getItem("monkey-type-clone-theme"));
@@ -19,9 +26,18 @@ const LoadingPage = ({ setIsLoaded, colorsLoaded, setColorsLoaded }) => {
 
       setColorsLoaded(true);
     }
-
-    setIsLoaded(true);
   }, []);
+
+  useEffect(() => {
+    if (colorsLoaded && language && user !== undefined) {
+      setTimeout(
+        () => {
+          setIsLoaded(true);
+        },
+        Date.now() - start > 1000 ? 0 : 1000 - (Date.now() - start)
+      );
+    }
+  }, [language, colorsLoaded, user]);
 
   return (
     <div className="bg-bgColor absolute inset-0 z-30">
@@ -31,7 +47,7 @@ const LoadingPage = ({ setIsLoaded, colorsLoaded, setColorsLoaded }) => {
         }`}
       ></div>
       <div className="wrapper relative">
-        <div className="contain items-end h-[55px]">
+        <div className="contain items-end h-[60px]">
           <div className="flex w-full items-end gap-6">
             <div className="flex items-end gap-2 cursor-pointer">
               <Logo isFillPrimary />

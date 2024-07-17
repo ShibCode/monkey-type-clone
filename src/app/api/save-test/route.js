@@ -9,16 +9,15 @@ export async function POST(req, res) {
 
     const { userId, testData } = await req.json();
 
-    // check if wpm * 5 * (4.25 / 60) approximately equals 'correct'
     const isCorrect =
       Math.abs(
         testData.correct - testData.wpm * 5 * (testData.timeTaken / 60)
-      ) < 0.01 &&
+      ) < 0.1 &&
       Math.abs(
         testData.correct +
           testData.incorrect -
           testData.raw * 5 * (testData.timeTaken / 60)
-      ) < 0.01;
+      ) < 0.1;
 
     if (!isCorrect) {
       return NextResponse.json({ message: "Invalid data", success: false });

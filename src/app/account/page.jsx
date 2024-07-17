@@ -7,7 +7,7 @@ import { faUser } from "@fortawesome/free-solid-svg-icons";
 import BarChart from "./BarChart";
 import LineChart from "./LineChart";
 import { useRouter } from "next/navigation";
-import { useStats, useUser } from "@/context/User";
+import { useUser } from "@/context/User";
 import TestHistory from "./TestHistory";
 import { post } from "@/utils/post";
 import Spinner from "@/components/Spinner";
@@ -35,16 +35,12 @@ const Account = () => {
   const [allTimeStats, setAllTimeStats] = useState(null);
   const [testHistory, setTestHistory] = useState(null);
 
-  const router = useRouter();
-
   const { user } = useUser();
 
   useEffect(() => {
-    if (!user.id) router.push("/");
-
     const stats = false;
     if (!stats) {
-      post("/get-user-stats", { userId: user.id }).then((stats) => {
+      post("/get-user-stats", { userId: user._id }).then((stats) => {
         setBarChartData(stats.barChartData);
         setBestTests(stats.bestTests);
         setAllTimeStats(stats.allTimeStats);
@@ -52,7 +48,7 @@ const Account = () => {
       });
     }
 
-    post("/get-line-chart-data", { userId: user.id }).then((data) => {
+    post("/get-line-chart-data", { userId: user._id }).then((data) => {
       setLineChartData(data);
     });
   }, []);
@@ -68,14 +64,14 @@ const Account = () => {
                 className="text-bgSecondary text-6xl translate-y-1"
               />
             </div>
-            <div>
+            <div className="flex flex-col gap-1">
               <h2
                 style={{
-                  fontSize: `min(${17 / user.username.length}vw , ${
+                  fontSize: `min(min(${17 / user.username.length}vw , ${
                     260 / user.username.length
-                  }px)`,
+                  }px), 34px)`,
                 }}
-                className="text-tertiary"
+                className="text-tertiary leading-[1]"
               >
                 {user.username}
               </h2>
@@ -115,37 +111,45 @@ const Account = () => {
           <BestTestsInMode bestTests={bestTests} modeName="words" />
         </div>
 
-        <div className="flex flex-col gap-12">
-          <div className="h-[420px] w-full relative">
-            <LineChart
-              totalTests={allTimeStats["tests completed"]}
-              chartData={lineChartData}
-            />
-          </div>
-          <div className="h-[220px] w-full">
-            <BarChart wpmRange={barChartData} />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-allTimeStatsLayout gap-8">
-          {allTimeStatsLayout.map((key, index) => {
-            return (
-              <div key={index}>
-                <h2 className="text-primary">{key}</h2>
-                <p className="text-tertiary text-5xl">
-                  {key === "time typing"
-                    ? formatTime(allTimeStats[key])
-                    : allTimeStats[key]}
-                </p>
+        {testHistory.tests.length > 0 ? (
+          <>
+            <div className="flex flex-col gap-12">
+              <div className="h-[420px] w-full relative">
+                <LineChart
+                  totalTests={allTimeStats["tests completed"]}
+                  chartData={lineChartData}
+                />
               </div>
-            );
-          })}
-        </div>
+              <div className="h-[220px] w-full">
+                <BarChart wpmRange={barChartData} />
+              </div>
+            </div>
 
-        <TestHistory
-          testHistory={testHistory}
-          setTestHistory={setTestHistory}
-        />
+            <div className="grid grid-cols-allTimeStatsLayout gap-8">
+              {allTimeStatsLayout.map((key, index) => {
+                return (
+                  <div key={index}>
+                    <h2 className="text-primary">{key}</h2>
+                    <p className="text-tertiary text-5xl">
+                      {key === "time typing"
+                        ? formatTime(allTimeStats[key])
+                        : allTimeStats[key]}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+
+            <TestHistory
+              testHistory={testHistory}
+              setTestHistory={setTestHistory}
+            />
+          </>
+        ) : (
+          <div className="text-xl text-tertiary text-center flex-1 flex items-center justify-center">
+            No Data Found
+          </div>
+        )}
       </div>
     </div>
   ) : (

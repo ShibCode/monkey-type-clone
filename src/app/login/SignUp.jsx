@@ -5,7 +5,6 @@ import Input from "./Input";
 import Button from "./Button";
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import { post } from "@/utils/post";
-import { useRouter } from "next/navigation";
 import { useUser } from "@/context/User";
 import useUpdateEffect from "@/hooks/useUpdateEffect";
 import createToast from "@/utils/createToast";
@@ -25,8 +24,6 @@ const SignUp = () => {
 
   const [isValidated, setIsValidated] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
-
-  const router = useRouter();
 
   const { login } = useUser();
 
@@ -63,8 +60,7 @@ const SignUp = () => {
 
     if (res.success) {
       createToast(res.message, "success");
-      login(res.user);
-      router.push("/");
+      login(res.user, res.token);
     } else createToast(res.message, "error");
 
     setUserInfo({

@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEarthAmerica } from "@fortawesome/free-solid-svg-icons";
 import ChangeLanguageModal from "../ChangeLanguageModal";
 import { useLanguage } from "@/context/Language";
+import Word from "./Word";
 
 const WORDS_TO_SHOW_FOR_TIME_MODE = 100;
 
@@ -19,8 +20,6 @@ const TestArea = ({
   setRawWpmEachSecond,
   setErrorsEachSecond,
   mode,
-  totalWords,
-  totalTime,
   duringTestRestart,
 }) => {
   const [words, setWords] = useState([]);
@@ -28,10 +27,7 @@ const TestArea = ({
 
   const [latestWpm, setLatestWpm] = useState(0);
 
-  const [position, setPosition] = useState({
-    word: 0,
-    charInWord: 0,
-  });
+  const [position, setPosition] = useState({ word: 0, part: 0, char: 0 });
 
   const [caretPosition, setCaretPosition] = useState({
     top: 1,
@@ -42,17 +38,15 @@ const TestArea = ({
 
   const [seconds, time, startTimer, stopTimer] = useTimer();
 
-  const [state, updateState] = useState();
-  const forceUpdate = React.useCallback(() => updateState({}), []);
-
   const { testStarted, setTestStarted } = useTestStarted();
   const { getSettingValue } = useSettings();
   const language = useLanguage();
 
-  const generatePara = async () => {
+  const generatePara = () => {
     const words = [];
 
-    const cap = mode === "words" ? totalWords : WORDS_TO_SHOW_FOR_TIME_MODE;
+    const cap =
+      mode.name === "words" ? mode.category : WORDS_TO_SHOW_FOR_TIME_MODE;
 
     for (let i = 0; i < cap; i++) {
       let rng = Math.floor(Math.random() * language.words.length);
@@ -61,7 +55,7 @@ const TestArea = ({
         rng = Math.floor(Math.random() * language.words.length);
       }
 
-      words.push(language.words[rng]);
+      words.push(language.words[rng].split(" "));
     }
 
     return words;
@@ -70,37 +64,46 @@ const TestArea = ({
   const getResult = (isCompleted = false) => {
     const result = { correct: 0, incorrect: 0, missed: 0, extra: 0 };
 
-    if (mode === "words" && isCompleted) {
+    if (mode.name === "words" && isCompleted) {
       words.forEach((word, wIndex) => {
         const typedWord = typedWords[wIndex];
-        word.split("").forEach((char, cIndex) => {
-          if (typedWord[cIndex] === char) result.correct++;
-          else if (typedWord[cIndex] === undefined) result.missed++;
-          else if (typedWord[cIndex] !== char) result.incorrect++;
-        });
 
-        if (typedWord.length > word.length)
-          result.extra += typedWord.length - word.length;
+        word.forEach((part, pIndex) => {
+          const typedPart = typedWord[pIndex];
+
+          part.split("").forEach((char, cIndex) => {
+            if (typedPart[cIndex] === char) result.correct++;
+            else if (typedPart[cIndex] === undefined) result.missed++;
+            else if (typedPart[cIndex] !== char) result.incorrect++;
+          });
+
+          if (typedWord.length > part.length)
+            result.extra += typedWord.length - part.length;
+          result.correct += 1;
+        });
       });
-      result.correct += totalWords - 1;
+      result.correct -= 1;
     } else {
       for (let i = 0; i <= position.word; i++) {
-        const actualWord = words[i];
-        const typedWord = typedWords[i];
+        const actualWord = words[i] ?? [];
+        const typedWord = typedWords[i] ?? [];
 
-        const charCap =
-          i === position.word ? position.charInWord : actualWord.length;
+        for (let j = 0; j <= position.part; j++) {
+          const actualPart = actualWord[j] ?? "";
+          const typedPart = typedWord[j] ?? "";
 
-        for (let j = 0; j < charCap; j++) {
-          if (typedWord[j] === actualWord[j]) result.correct++;
-          else if (typedWord[j] === undefined) result.missed++;
-          else if (typedWord[j] !== actualWord[j]) result.incorrect++;
-        }
+          const charCap =
+            i === position.word ? position.char : actualPart.length;
 
-        const typedWordLength = typedWord ? typedWord.length : 0;
+          for (let k = 0; k < charCap; k++) {
+            if (typedPart[k] === actualPart[k]) result.correct++;
+            else if (typedPart[k] === undefined) result.missed++;
+            else if (typedPart[k] !== actualPart[k]) result.incorrect++;
+          }
 
-        if (typedWordLength > actualWord.length) {
-          result.extra += typedWord.length - actualWord.length;
+          if (typedPart.length > actualPart.length) {
+            result.extra += typedPart.length - actualPart.length;
+          }
         }
       }
       result.correct += position.word;
@@ -126,45 +129,49 @@ const TestArea = ({
       setPosition((position) => {
         if (validChars.includes(e.key)) {
           setTypedWords((prev) => {
-            const lastWord = prev[position.word];
-            const newWord = lastWord ? lastWord + e.key : e.key;
-            const newArr = prev.slice(0, position.word);
-            newArr.push(newWord);
-            return newArr;
+            const lastWord = prev[position.word] ?? [];
+            const lastPart = lastWord[position.part] ?? "";
+            const newPart = lastPart + e.key;
+            const newWord = [...lastWord.slice(0, position.part), newPart];
+
+            return [...prev.slice(0, position.word), newWord];
           });
 
-          return { ...position, charInWord: position.charInWord + 1 };
-        } else if (e.key === " " && position.charInWord !== 0) {
-          return { word: position.word + 1, charInWord: 0 };
-        } else if (e.key === "Backspace" && position.charInWord !== 0) {
+          return { ...position, char: position.char + 1 };
+        } else if (e.key === " " && position.char !== 0) {
+          if (words[position.word].length > position.part + 1) {
+            return { word: position.word, part: position.part + 1, char: 0 };
+          } else return { word: position.word + 1, part: 0, char: 0 };
+        } else if (e.key === "Backspace" && position.char !== 0) {
           setTypedWords((prev) => {
+            const { word, part, char } = position;
+
+            // bool refers to whether the user is holding ctrl or not
             const backspacedWords = bool
-              ? prev.slice(0, position.word)
+              ? [...prev.slice(0, word), prev[word].slice(0, part)]
               : [
-                  ...prev.slice(0, position.word),
-                  prev[position.word].slice(0, position.charInWord - 1),
+                  ...prev.slice(0, word),
+                  [
+                    ...prev[word].slice(0, part),
+                    prev[word][part].slice(0, char - 1),
+                  ],
                 ];
             return backspacedWords;
           });
 
-          return {
-            ...position,
-            charInWord: bool ? 0 : position.charInWord - 1,
-          };
-        } else if (e.key === "Control") {
-          setIsHoldingControl(true);
-        }
+          return { ...position, char: bool ? 0 : position.char - 1 };
+        } else if (e.key === "Control") setIsHoldingControl(true);
+
         if (e.key === "Tab") {
           e.preventDefault();
           const restartBtn = document.querySelector("#restartBtn");
           restartBtn.focus();
         }
-
         return position;
       });
+
       return bool;
     });
-    forceUpdate();
   };
 
   const handleKeyUp = (e) => {
@@ -172,14 +179,13 @@ const TestArea = ({
   };
 
   const moveCaret = () => {
-    const { word, charInWord } = position;
+    const { word, part, char } = position;
 
-    const character = document.querySelector(`.letter-${word}-${charInWord}`);
+    const character = document.getElementById(`letter-${word}${part}${char}`);
 
-    if (character === null && charInWord > 0) {
-      const character = document.querySelector(
-        `.letter-${word}-${charInWord - 1}
-        `
+    if (character === null && char > 0) {
+      const character = document.getElementById(
+        `letter-${word}${part}${char - 1}`
       );
 
       setCaretPosition((prev) => ({
@@ -194,27 +200,24 @@ const TestArea = ({
     }
   };
 
-  const wordsUpdatedRef = useRef(false);
-
   useUpdateEffect(() => {
     if (
-      mode === "time" &&
-      typedWords.length === words.length - 0.5 * WORDS_TO_SHOW_FOR_TIME_MODE &&
-      !wordsUpdatedRef.current
+      mode.name === "time" &&
+      typedWords.length === words.length - 0.5 * WORDS_TO_SHOW_FOR_TIME_MODE
     ) {
-      wordsUpdatedRef.current = true;
-      generatePara().then((words) => {
-        setWords((prev) => [...prev, ...words]);
-        wordsUpdatedRef.current = false;
-      });
-    }
+      const words = generatePara();
+      setWords((prev) => [...prev, ...words]);
+    } // to ensure that there are enough words for the time mode
 
+    // this piece of code is responsible for catching the time frame of errors to show in the result chart
     if (typedWords.length !== 0) {
       const lastWord = typedWords[typedWords.length - 1];
-      const typedLetter = lastWord[lastWord.length - 1];
+      const lastPart = lastWord[lastWord.length - 1];
+      const typedLetter = lastPart[lastPart.length - 1];
 
       const actualWord = words[typedWords.length - 1];
-      const actualLetter = actualWord[lastWord.length - 1];
+      const actualPart = actualWord[lastWord.length - 1];
+      const actualLetter = actualPart[lastPart.length - 1];
 
       if (typedLetter !== actualLetter) {
         setErrorsEachSecond((prev) => {
@@ -238,13 +241,21 @@ const TestArea = ({
   }, [typedWords]);
 
   useEffect(() => {
-    if (typedWords.length !== 0 && time === 0) startTimer();
-    else if (
-      (mode === "words" &&
-        ((typedWords.length === totalWords &&
-          typedWords[totalWords - 1].length === words[totalWords - 1].length) ||
-          position.word === totalWords)) ||
-      (mode === "time" && seconds >= totalTime)
+    if (words.length <= 0) return;
+
+    const lastWord = words[words.length - 1];
+    const lastPart = lastWord[lastWord.length - 1];
+
+    if (typedWords.length !== 0 && time === 0) {
+      setTestStarted(true);
+      startTimer();
+    } else if (
+      (mode.name === "words" &&
+        ((position.word === mode.category - 1 &&
+          position.part === lastWord.length - 1 &&
+          position.char === lastPart.length) ||
+          position.word === mode.category)) ||
+      (mode.name === "time" && seconds >= mode.category)
     ) {
       stopTimer();
       getResult(true);
@@ -254,16 +265,19 @@ const TestArea = ({
   }, [position, seconds]);
 
   useEffect(() => {
-    document.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("keyup", handleKeyUp);
+    const words = generatePara();
+    setWords(words);
+  }, []);
 
-    generatePara().then((words) => setWords(words));
+  useUpdateEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
 
     return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("keyup", handleKeyUp);
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
     };
-  }, []);
+  }, [words]);
 
   useEffect(() => {
     moveCaret();
@@ -288,9 +302,9 @@ const TestArea = ({
         >
           {getSettingValue("live progress") === "show" && (
             <div>
-              {mode === "words"
-                ? `${position.word}/${totalWords}`
-                : totalTime - seconds}
+              {mode.name === "words"
+                ? `${position.word}/${mode.category}`
+                : mode.category - seconds}
             </div>
           )}
           {getSettingValue("live speed") === "show" && (
@@ -334,67 +348,14 @@ const TestArea = ({
               left: caretPosition.left || 0,
             }}
           ></div>
-          {words.map((word, wIndex) => {
-            return (
-              <div key={wIndex} className="inline">
-                {word.split("").map((char, cIndex) => {
-                  const typedWord = typedWords[wIndex];
-                  const typedWordLength = typedWord?.length || 0;
-
-                  return (
-                    <span
-                      className={`text-2xl select-none ${`letter-${wIndex.toString()}-${cIndex.toString()} 
-                      ${
-                        typedWord && typedWord[cIndex] === char
-                          ? getSettingValue("flip test colors") === "on"
-                            ? "text-primary"
-                            : "text-secondary"
-                          : cIndex >= typedWordLength
-                          ? getSettingValue("flip test colors") === "on"
-                            ? "text-secondary"
-                            : "text-primary"
-                          : getSettingValue("blind mode") === ""
-                          ? getSettingValue("flip test colors") === "on"
-                            ? "text-primary"
-                            : "text-secondary"
-                          : "text-error"
-                      }`} 
-                    
-                  `}
-                      key={cIndex}
-                    >
-                      {char}
-                    </span>
-                  );
-                })}
-
-                {typedWords[wIndex] &&
-                  typedWords[wIndex].length > word.length &&
-                  typedWords[wIndex]
-                    .split("")
-                    .slice(word.length)
-                    .map((char, eIndex) => {
-                      return (
-                        <span
-                          className={`text-2xl select-none letter-${wIndex.toString()}-${(
-                            word.length + eIndex
-                          ).toString()}
-                      } ${
-                        getSettingValue("blind mode") === ""
-                          ? getSettingValue("flip test colors") === "on"
-                            ? "text-primary"
-                            : "text-secondary"
-                          : "text-error"
-                      }`}
-                          key={`00` + eIndex.toString()}
-                        >
-                          {char}
-                        </span>
-                      );
-                    })}
-              </div>
-            );
-          })}
+          {words.map((word, wIndex) => (
+            <Word
+              key={wIndex}
+              word={word}
+              wIndex={wIndex}
+              typedWords={typedWords}
+            />
+          ))}
         </div>
       </div>
     </>

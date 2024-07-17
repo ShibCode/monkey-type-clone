@@ -19,7 +19,6 @@ const Result = ({
   rawWpmEachSecond,
   errorsEachSecond,
   mode,
-  modeCategory,
   restart,
 }) => {
   const { user } = useUser();
@@ -37,14 +36,7 @@ const Result = ({
     ).toFixed(2),
   };
 
-  const testData = {
-    ...stats,
-    ...result,
-    mode: {
-      name: mode,
-      category: modeCategory,
-    },
-  };
+  const testData = { ...stats, ...result, mode };
 
   const [tabIndex, setTabIndex] = useState(0);
   const [isPersonalBest, setIsPersonalBest] = useState(false);
@@ -146,7 +138,7 @@ const Result = ({
 
   async function saveTest() {
     const res = await post("/save-test", {
-      userId: user.id,
+      userId: user._id,
       testData: { ...testData, language },
     });
     createToast(res.message, res.success ? "success" : "error");
@@ -168,7 +160,7 @@ const Result = ({
   }
 
   useEffect(() => {
-    if (user.id)
+    if (user._id)
       saveTest().then((res) => {
         if (!res.success) return;
         if (res.isPersonalBest) setIsPersonalBest(true);
@@ -217,7 +209,7 @@ const Result = ({
             <div>
               <h2 className="text-primary">test type</h2>
               <p className="text-secondary">
-                {mode} {modeCategory}
+                {mode.name} {mode.category}
               </p>
               <p className="text-secondary leading-[100%]">{language}</p>
             </div>

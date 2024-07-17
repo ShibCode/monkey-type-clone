@@ -141,3 +141,25 @@ export async function GET() {
     return NextResponse.json({ e });
   }
 }
+
+// if (words[position.word].split(" ").length > 1) {
+//   const lengths = words[position.word]
+//     .split(" ")
+//     .map((word) => word.length);
+
+//   const partOfWord = lengths.reduce(
+//     (acc, curr, i) => {
+//       if (acc.part !== null) return acc;
+
+//       if (acc.accLength + curr >= position.charInWord)
+//         return { part: i, accLength: acc.accLength + curr + 1 };
+//       return {
+//         part: acc.part,
+//         accLength: acc.accLength + curr + 1,
+//       };
+//     },
+//     { part: null, accLength: 0 }
+//   );
+
+//   return { word: position.word, charInWord: partOfWord.accLength };
+// } else

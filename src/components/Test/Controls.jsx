@@ -1,14 +1,8 @@
-import { useTestStarted } from "@/context/TestStarted";
 import React from "react";
+import { useTestStarted } from "@/context/TestStarted";
+import { MODES } from "./index";
 
-const Controls = ({
-  changeMode,
-  updateTotalWords,
-  updateTotalTime,
-  totalWords,
-  totalTime,
-  mode,
-}) => {
+const Controls = ({ mode, changeMode, changeCategory }) => {
   const { testStarted } = useTestStarted();
 
   return (
@@ -18,78 +12,45 @@ const Controls = ({
       }`}
     >
       <div className="flex gap-4">
-        <button
-          onClick={() => changeMode("time")}
-          className={`text-primary cursor-pointer ${
-            mode === "time" && "text-secondary"
-          }`}
-        >
-          time
-        </button>
-        <button
-          onClick={() => changeMode("words")}
-          className={`text-primary cursor-pointer ${
-            mode === "words" && "text-secondary"
-          }`}
-        >
-          words
-        </button>
+        {Object.keys(MODES).map((modeName) => (
+          <button
+            key={modeName}
+            onClick={() => changeMode(modeName)}
+            className={`text-primary cursor-pointer ${
+              mode.name === modeName && "text-secondary"
+            }`}
+          >
+            {modeName}
+          </button>
+        ))}
       </div>
-
       <div className="bg-bgColor self-stretch w-1"></div>
 
-      <div className="flex gap-4">
-        <button
-          onClick={() =>
-            mode === "words" ? updateTotalWords(10) : updateTotalTime(15)
-          }
-          className={`text-primary cursor-pointer ${
-            mode === "words"
-              ? totalWords === 10 && "text-secondary"
-              : totalTime === 15 && "text-secondary"
-          }`}
-        >
-          {mode === "words" ? 10 : 15}
-        </button>
-        <button
-          onClick={() =>
-            mode === "words" ? updateTotalWords(25) : updateTotalTime(30)
-          }
-          className={`text-primary cursor-pointer ${
-            mode === "words"
-              ? totalWords === 25 && "text-secondary"
-              : totalTime === 30 && "text-secondary"
-          }`}
-        >
-          {mode === "words" ? 25 : 30}
-        </button>
-        <button
-          onClick={() =>
-            mode === "words" ? updateTotalWords(50) : updateTotalTime(60)
-          }
-          className={`text-primary cursor-pointer ${
-            mode === "words"
-              ? totalWords === 50 && "text-secondary"
-              : totalTime === 60 && "text-secondary"
-          }`}
-        >
-          {mode === "words" ? 50 : 60}
-        </button>
-        <button
-          onClick={() =>
-            mode === "words" ? updateTotalWords(100) : updateTotalTime(120)
-          }
-          className={`text-primary cursor-pointer ${
-            mode === "words"
-              ? totalWords === 100 && "text-secondary"
-              : totalTime === 120 && "text-secondary"
-          }`}
-        >
-          {mode === "words" ? 100 : 120}
-        </button>
-      </div>
+      <Categories
+        categories={MODES[mode.name]}
+        activeCategory={mode.category}
+        changeCategory={changeCategory}
+      />
     </div>
   );
 };
 
 export default Controls;
+
+const Categories = ({ categories, activeCategory, changeCategory }) => {
+  return (
+    <div className="flex gap-4">
+      {categories.map((category) => (
+        <button
+          key={category}
+          onClick={() => changeCategory(category)}
+          className={`text-primary cursor-pointer ${
+            activeCategory === category && "text-secondary"
+          }`}
+        >
+          {category}
+        </button>
+      ))}
+    </div>
+  );
+};
