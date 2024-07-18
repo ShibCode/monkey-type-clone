@@ -48,7 +48,7 @@ const Leaderboards = () => {
   }, [activeMode]);
 
   return (
-    <div className="wrapper my-12">
+    <div className="wrapper mt-12 mb-8">
       <div className="contain flex-col gap-8">
         <h1 className="text-tertiary text-5xl mb-2">Leaderboards</h1>
 
@@ -95,7 +95,7 @@ const Leaderboards = () => {
                     className={`${
                       index % 2 === 0 ? "bg-bgSecondary" : "bg-transparent"
                     } ${
-                      test.username === user.username
+                      test.username === user?.username
                         ? "text-secondary"
                         : "text-tertiary"
                     }`}

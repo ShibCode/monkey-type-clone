@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import Controls from "./Controls";
 import TestArea from "./TestArea";
 import Result from "./Result";
-import { useTestStarted } from "@/context/TestStarted";
+import { useTestEssentials } from "@/context/TestEssentials";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRotateRight } from "@fortawesome/free-solid-svg-icons";
 
@@ -27,7 +27,7 @@ const Test = () => {
   const [seed, setSeed] = useState(1);
   const [menuSeed, setMenuSeed] = useState(1);
 
-  const { setTestStarted } = useTestStarted();
+  const { setTestStarted } = useTestEssentials();
 
   const restartBtn = useRef(null);
 

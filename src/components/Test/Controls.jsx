@@ -1,9 +1,9 @@
 import React from "react";
-import { useTestStarted } from "@/context/TestStarted";
+import { useTestEssentials } from "@/context/TestEssentials";
 import { MODES } from "./index";
 
-const Controls = ({ mode, changeMode, changeCategory }) => {
-  const { testStarted } = useTestStarted();
+const Controls = ({ mode, changeMode }) => {
+  const { testStarted } = useTestEssentials();
 
   return (
     <div
@@ -15,7 +15,7 @@ const Controls = ({ mode, changeMode, changeCategory }) => {
         {Object.keys(MODES).map((modeName) => (
           <button
             key={modeName}
-            onClick={() => changeMode(modeName)}
+            onClick={() => changeMode(modeName, MODES[modeName][0])}
             className={`text-primary cursor-pointer ${
               mode.name === modeName && "text-secondary"
             }`}
@@ -27,9 +27,9 @@ const Controls = ({ mode, changeMode, changeCategory }) => {
       <div className="bg-bgColor self-stretch w-1"></div>
 
       <Categories
-        categories={MODES[mode.name]}
+        modeName={mode.name}
         activeCategory={mode.category}
-        changeCategory={changeCategory}
+        changeMode={changeMode}
       />
     </div>
   );
@@ -37,13 +37,15 @@ const Controls = ({ mode, changeMode, changeCategory }) => {
 
 export default Controls;
 
-const Categories = ({ categories, activeCategory, changeCategory }) => {
+const Categories = ({ modeName, activeCategory, changeMode }) => {
+  const categories = MODES[modeName];
+
   return (
     <div className="flex gap-4">
       {categories.map((category) => (
         <button
           key={category}
-          onClick={() => changeCategory(category)}
+          onClick={() => changeMode(modeName, category)}
           className={`text-primary cursor-pointer ${
             activeCategory === category && "text-secondary"
           }`}

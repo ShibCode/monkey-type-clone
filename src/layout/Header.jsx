@@ -12,12 +12,12 @@ import {
 import Link from "next/link";
 import Logo from "@/svg component/Logo";
 import { useUser } from "@/context/User";
-import { useTestStarted } from "@/context/TestStarted";
+import { useTestEssentials } from "@/context/TestEssentials";
 import createToast from "@/utils/createToast";
 
 const Header = () => {
   const { user, logout } = useUser();
-  const { testStarted } = useTestStarted();
+  const { testStarted } = useTestEssentials();
 
   return (
     <div className="wrapper relative z-20">

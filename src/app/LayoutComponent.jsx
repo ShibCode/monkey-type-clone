@@ -4,12 +4,13 @@ import React, { useState } from "react";
 import Header from "@/layout/Header";
 import LoadingPage from "@/components/LoadingPage";
 import User from "@/context/User";
-import TestStarted from "@/context/TestStarted";
+
 import Settings from "@/context/Settings";
 import { ToastContainer } from "react-toastify";
 import Language from "@/context/Language";
 import "react-toastify/dist/ReactToastify.css";
 import Footer from "@/layout/Footer";
+import TestEssentials from "@/context/TestEssentials";
 
 const LayoutComponent = ({ children }) => {
   const [colorsLoaded, setColorsLoaded] = useState(false);
@@ -27,7 +28,7 @@ const LayoutComponent = ({ children }) => {
       <User>
         <Settings>
           <Language>
-            <TestStarted>
+            <TestEssentials>
               {isLoaded ? (
                 <>
                   <Header />
@@ -41,7 +42,7 @@ const LayoutComponent = ({ children }) => {
                   setColorsLoaded={setColorsLoaded}
                 />
               )}
-            </TestStarted>
+            </TestEssentials>
           </Language>
         </Settings>
       </User>

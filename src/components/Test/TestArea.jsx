@@ -1,12 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import validChars from "@/validChars";
 import calculateWpm from "@/utils/calulateWpm";
-import { useTestStarted } from "@/context/TestStarted";
+import { useTestEssentials } from "@/context/TestEssentials";
 import useUpdateEffect from "@/hooks/useUpdateEffect";
 import useTimer from "@/hooks/useTimer";
 import { useSettings } from "@/context/Settings";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEarthAmerica } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEarthAmerica,
+  faMousePointer,
+} from "@fortawesome/free-solid-svg-icons";
 import ChangeLanguageModal from "../ChangeLanguageModal";
 import { useLanguage } from "@/context/Language";
 import Word from "./Word";
@@ -36,9 +39,13 @@ const TestArea = ({
 
   const [isHoldingControl, setIsHoldingControl] = useState(false);
 
-  const [seconds, time, startTimer, stopTimer] = useTimer();
+  const [isFocused, setIsFocused] = useState(true);
 
-  const { testStarted, setTestStarted } = useTestStarted();
+  const wordsWrapper = useRef(null);
+  const unfocusTimeout = useRef(null);
+
+  const [seconds, time, startTimer, stopTimer] = useTimer();
+  const { testStarted, setTestStarted, modalOpen } = useTestEssentials();
   const { getSettingValue } = useSettings();
   const language = useLanguage();
 
@@ -125,6 +132,14 @@ const TestArea = ({
   };
 
   const handleKeyDown = (e) => {
+    if (modalOpen) return;
+
+    if (!isFocused) {
+      setIsFocused(true);
+      if (!testStarted && getSettingValue("out of focus warning") === "show")
+        return;
+    }
+
     setIsHoldingControl((bool) => {
       setPosition((position) => {
         if (validChars.includes(e.key)) {
@@ -213,6 +228,9 @@ const TestArea = ({
     if (typedWords.length !== 0) {
       const lastWord = typedWords[typedWords.length - 1];
       const lastPart = lastWord[lastWord.length - 1];
+
+      if (!lastPart) return () => {};
+
       const typedLetter = lastPart[lastPart.length - 1];
 
       const actualWord = words[typedWords.length - 1];
@@ -270,6 +288,8 @@ const TestArea = ({
   }, []);
 
   useUpdateEffect(() => {
+    if (modalOpen) setIsFocused(false);
+
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
 
@@ -277,7 +297,7 @@ const TestArea = ({
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [words]);
+  }, [words, isFocused, testStarted, modalOpen]);
 
   useEffect(() => {
     moveCaret();
@@ -286,9 +306,36 @@ const TestArea = ({
   useUpdateEffect(getResult, [seconds]);
 
   useEffect(() => {
-    const words = document.getElementById("wordsWrapper");
-    if (caretPosition.top - 1 > 42) words.scrollTop = caretPosition.top - 43;
+    if (caretPosition.top - 1 > 42) {
+      wordsWrapper.current.scrollTop = caretPosition.top - 43;
+    }
   }, [caretPosition.top]);
+
+  const focus = (e) => {
+    e.stopPropagation();
+
+    if (unfocusTimeout.current) clearTimeout(unfocusTimeout.current);
+
+    setIsFocused(true);
+  };
+
+  const unfocus = () => {
+    if (isFocused) {
+      unfocusTimeout.current = setTimeout(() => setIsFocused(false), 400);
+    }
+  };
+
+  useEffect(() => {
+    wordsWrapper.current?.addEventListener("click", focus);
+    window.addEventListener("click", unfocus);
+
+    return () => {
+      // ! here, this clg is null and therefore when test is restarted, it starts from unfocus
+      console.log(wordsWrapper.current);
+      wordsWrapper.current?.removeEventListener("click", focus);
+      window.removeEventListener("click", unfocus);
+    };
+  }, [wordsWrapper]);
 
   const [languageModalIsActive, setLanguageModalIsActive] = useState(false);
 
@@ -334,19 +381,35 @@ const TestArea = ({
         </div>
       </div>
 
+      {isFocused}
+
       <div
-        id="wordsWrapper"
-        className="h-[116px] overflow-hidden scroll-smooth"
+        ref={wordsWrapper}
+        className={`h-[116px] overflow-hidden scroll-smooth relative`}
       >
-        <div className="flex flex-wrap gap-2.5 relative items-start">
+        <div
+          style={{ wordSpacing: "3px" }}
+          className={`absolute pointer-events-none transition-opacity duration-200 text-tertiary left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 tracking-wider text-lg flex gap-2.5 items-center ${
+            (isFocused || getSettingValue("out of focus warning") !== "show") &&
+            "opacity-0"
+          }`}
+        >
+          <FontAwesomeIcon icon={faMousePointer} /> Click here or press any key
+          to focus
+        </div>
+
+        <div
+          className={`flex flex-wrap gap-2.5 relative items-start transition-[filter] duration-200 ${
+            !isFocused &&
+            getSettingValue("out of focus warning") === "show" &&
+            "blur-[5px]"
+          }`}
+        >
           <div
+            style={{ top: caretPosition.top, left: caretPosition.left || 0 }}
             className={`w-0.5 h-8 bg-secondary absolute transition-all ease-linear duration-100 ${
               time === 0 && "animate-blink"
-            }`}
-            style={{
-              top: caretPosition.top,
-              left: caretPosition.left || 0,
-            }}
+            } ${isFocused ? "" : "!opacity-0"}`}
           ></div>
           {words.map((word, wIndex) => (
             <Word

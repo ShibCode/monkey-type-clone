@@ -5,6 +5,7 @@ import {
   faGauge,
   faLanguage,
   faPalette,
+  faWarning,
 } from "@fortawesome/free-solid-svg-icons";
 
 const defaultSettings = {
@@ -54,6 +55,14 @@ const defaultSettings = {
       type: "someOpt",
       icon: faChartPie,
       desc: "Displays a live timer for timed tests and word count for word based tests (word, quote or custom mode).",
+      options: ["hide", "show"],
+      active: "show",
+    },
+
+    "out of focus warning": {
+      type: "someOpt",
+      icon: faWarning,
+      desc: " Shows an out of focus reminder after few moments of being 'out of focus' (not being able to type). ",
       options: ["hide", "show"],
       active: "show",
     },

@@ -160,9 +160,9 @@ const Result = ({
   }
 
   useEffect(() => {
-    if (user._id)
+    if (user)
       saveTest().then((res) => {
-        if (!res.success) return;
+        if (!res.success) createToast(res.message, "error");
         if (res.isPersonalBest) setIsPersonalBest(true);
       });
 
@@ -230,7 +230,7 @@ const Result = ({
           </div>
         </div>
 
-        {Object.keys(user).length === 0 && (
+        {!user && (
           <p className="text-primary text-center text-lg cursor-default">
             <Link
               href="/login"
