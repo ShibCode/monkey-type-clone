@@ -1,13 +1,5 @@
-import TestStarted from "@/context/TestStarted";
-
-import { User } from "@/model/user";
 import dbConnect from "@/utils/dbConn";
 import { NextResponse } from "next/server";
-import { generateTestData } from "./generateTestData";
-import { formatTime } from "@/utils/formatTime";
-import { model } from "mongoose";
-import bcrypt from "bcrypt";
-import { Test } from "@/model/test";
 
 const levels = [
   "beginner",
