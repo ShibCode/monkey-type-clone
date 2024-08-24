@@ -76,14 +76,6 @@ const Header = () => {
                 className="text-primary hover:text-tertiary cursor-pointer transition-colors duration-75"
               />
             </Link>
-            <Link href="/">
-              <FontAwesomeIcon
-                icon={faInfo}
-                width={20}
-                height={20}
-                className="text-primary hover:text-tertiary cursor-pointer transition-colors duration-75"
-              />
-            </Link>
             <Link href="/settings" tabIndex={-1}>
               <FontAwesomeIcon
                 icon={faGear}

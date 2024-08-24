@@ -31,40 +31,16 @@ const Footer = () => {
       }`}
     >
       <div className="contain justify-between">
-        <ul className="flex items-center gap-5">
-          <li className="flex items-center gap-1.5 text-primary hover:text-tertiary cursor-pointer transition-colors duration-75">
-            <FontAwesomeIcon icon={faEnvelope} />
-            contact
-          </li>
-          <li className="flex items-center gap-1.5 text-primary hover:text-tertiary cursor-pointer transition-colors duration-75">
-            <FontAwesomeIcon icon={faDonate} />
-            support
-          </li>
-          <li className="flex items-center gap-1.5 text-primary hover:text-tertiary cursor-pointer transition-colors duration-75">
+        <div className="flex items-center gap-5">
+          <a
+            href="https://github.com/ShibCode/monkey-type-clone"
+            target="_blank"
+            className="flex items-center gap-1.5 text-primary hover:text-tertiary cursor-pointer transition-colors duration-75"
+          >
             <FontAwesomeIcon icon={faCode} />
             github
-          </li>
-          <li className="flex items-center gap-1.5 text-primary hover:text-tertiary cursor-pointer transition-colors duration-75">
-            <FontAwesomeIcon icon={faDiscord} />
-            discord
-          </li>
-          <li className="flex items-center gap-1.5 text-primary hover:text-tertiary cursor-pointer transition-colors duration-75">
-            <FontAwesomeIcon icon={faTwitter} />
-            twitter
-          </li>
-          <li className="flex items-center gap-1.5 text-primary hover:text-tertiary cursor-pointer transition-colors duration-75">
-            <FontAwesomeIcon icon={faFileContract} />
-            terms
-          </li>
-          <li className="flex items-center gap-1.5 text-primary hover:text-tertiary cursor-pointer transition-colors duration-75">
-            <FontAwesomeIcon icon={faShieldAlt} />
-            security
-          </li>
-          <li className="flex items-center gap-1.5 text-primary hover:text-tertiary cursor-pointer transition-colors duration-75">
-            <FontAwesomeIcon icon={faLock} />
-            privacy
-          </li>
-        </ul>
+          </a>
+        </div>
 
         <ChangeTheme />
       </div>

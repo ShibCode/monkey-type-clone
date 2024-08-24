@@ -54,8 +54,8 @@ const Account = () => {
   }, []);
 
   return testHistory ? (
-    <div className="wrapper my-12">
-      <div className="contain flex-col gap-8">
+    <div className="wrapper my-12 flex-grow">
+      <div className="contain flex-col gap-8 flex-grow">
         <div className="bg-bgSecondary flex items-center px-5 py-4 rounded-lg">
           <div className="flex items-center min-w-[300px] gap-4">
             <div className="bg-primary w-[80px] border-primary overflow-hidden border-t-[10px] border-r-[10px] border-l-[10px] border-b-[10px] aspect-square rounded-full grid place-items-center">
@@ -146,7 +146,7 @@ const Account = () => {
             />
           </>
         ) : (
-          <div className="text-xl text-tertiary text-center flex-1 flex items-center justify-center">
+          <div className="text-xl text-tertiary text-center flex-1 flex items-center justify-center flex-grow">
             No Data Found
           </div>
         )}

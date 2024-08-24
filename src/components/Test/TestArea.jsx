@@ -319,23 +319,23 @@ const TestArea = ({
     setIsFocused(true);
   };
 
-  const unfocus = () => {
+  const unfocus = (e) => {
     if (isFocused) {
       unfocusTimeout.current = setTimeout(() => setIsFocused(false), 400);
     }
   };
 
   useEffect(() => {
-    wordsWrapper.current?.addEventListener("click", focus);
-    window.addEventListener("click", unfocus);
+    setTimeout(() => {
+      wordsWrapper.current?.addEventListener("click", focus);
+      window.addEventListener("click", unfocus);
+    }, 500);
 
     return () => {
-      // ! here, this clg is null and therefore when test is restarted, it starts from unfocus
-      console.log(wordsWrapper.current);
       wordsWrapper.current?.removeEventListener("click", focus);
       window.removeEventListener("click", unfocus);
     };
-  }, [wordsWrapper]);
+  }, []);
 
   const [languageModalIsActive, setLanguageModalIsActive] = useState(false);
 
