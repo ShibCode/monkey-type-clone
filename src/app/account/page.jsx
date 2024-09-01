@@ -53,7 +53,7 @@ const Account = () => {
     });
   }, []);
 
-  return testHistory ? (
+  return testHistory && user ? (
     <div className="wrapper my-12 flex-grow">
       <div className="contain flex-col gap-8 flex-grow">
         <div className="bg-bgSecondary flex items-center px-5 py-4 rounded-lg">
