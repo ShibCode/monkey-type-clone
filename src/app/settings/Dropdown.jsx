@@ -22,14 +22,14 @@ const Dropdown = ({ active, groups, updateSetting }) => {
   }, []);
 
   return (
-    <div className="flex flex-col gap-2 w-1/3" ref={dropdownRef}>
+    <div className="flex flex-col gap-2 w-full sm:w-1/3" ref={dropdownRef}>
       <button className="bg-bgSecondary text-tertiary h-[38px] flex justify-between items-center px-3 rounded-lg">
         <span>{active.replace(/_/g, " ")}</span>
         <FontAwesomeIcon icon={faCaretDown} />
       </button>
 
       {isExpanded && (
-        <div className="bg-bgColor border border-bgSecondary absolute max-h-[194px] overflow-auto shadow-lg translate-y-[38px] w-[calc(90%*1/3)] max-w-[400px] rounded-lg space-y-2">
+        <div className="z-10 bg-bgColor border border-bgSecondary absolute max-h-[194px] overflow-auto shadow-lg translate-y-[38px] w-[90%] sm:w-[calc(90%*1/3)] sm:max-w-[400px] rounded-lg space-y-2">
           {groups.map((group, index) => (
             <div key={index}>
               <div

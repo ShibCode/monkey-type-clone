@@ -171,11 +171,11 @@ const Result = ({
   }, []);
 
   return (
-    <div className="absolute inset-0 z-10 mt-[55px] bg-bgColor wrapper">
+    <div className="mod:absolute inset-0 pt-[30px] mod:pt-[55px] z-10 wrapper">
       <div className="contain flex-col justify-center gap-8">
         <div className="flex flex-col gap-4">
-          <div className="flex w-full gap-4">
-            <div className="min-w-[250px]">
+          <div className="flex flex-col mod:flex-row w-full gap-8 mod:gap-4">
+            <div className="sm:w-full gap-y-4 gap-x-8 mod:w-[250px] flex flex-col sm:flex-row mod:flex-col sm:justify-around mod:justify-normal mx-auto sm:mx-0">
               <div>
                 <div className="flex items-center gap-2">
                   <h2 className="text-primary text-3xl">wpm</h2>
@@ -200,12 +200,12 @@ const Result = ({
               </div>
             </div>
 
-            <div className="h-[200px] w-full">
+            <div className="h-[200px] w-full mod:w-[calc(100%-250px)]">
               <Line data={chartData} options={options} />
             </div>
           </div>
 
-          <div className="flex justify-between">
+          <div className="flex justify-between flex-wrap gap-8">
             <div>
               <h2 className="text-primary">test type</h2>
               <p className="text-secondary">

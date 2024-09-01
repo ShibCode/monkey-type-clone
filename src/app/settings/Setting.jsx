@@ -12,8 +12,8 @@ const Setting = ({ type, icon, title, desc, options, active }) => {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex justify-between items-center gap-6 w-full">
-        <div className={`flex flex-col w-2/3 flex-1`}>
+      <div className="flex justify-between items-center gap-y-3 gap-x-6 w-full flex-col sm:flex-row">
+        <div className={`flex flex-col w-full sm:w-2/3 flex-1`}>
           <div className="flex items-center gap-2">
             <FontAwesomeIcon icon={icon} className="text-primary" />
 
@@ -24,7 +24,7 @@ const Setting = ({ type, icon, title, desc, options, active }) => {
         </div>
 
         {type === "someOpt" && (
-          <div className="flex gap-2 w-1/3">
+          <div className="flex gap-2 w-full sm:w-1/3">
             {options.map((option, i) => (
               <button
                 key={i}
@@ -69,7 +69,7 @@ const Setting = ({ type, icon, title, desc, options, active }) => {
       )}
 
       {type === "theme" && (
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-2">
           {Object.keys(themes).map((themeName, i) => {
             const { primary, secondary, tertiary, bg } = themes[themeName];
 
@@ -78,8 +78,8 @@ const Setting = ({ type, icon, title, desc, options, active }) => {
                 key={i}
                 onClick={() => updateSetting(themeName)}
                 style={{ color: secondary, backgroundColor: bg }}
-                className={`group h-9 w-full rounded-lg hover:scale-110 hover:z-10 !transition-transform relative ${
-                  themeName === active ? "outline scale-110 z-20" : ""
+                className={`group h-9 w-full rounded-lg hover:scale-105 hover:z-10 !transition-transform relative ${
+                  themeName === active ? "outline scale-105 z-20" : ""
                 }`}
               >
                 {themeName}

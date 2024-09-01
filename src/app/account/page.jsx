@@ -55,41 +55,39 @@ const Account = () => {
 
   return testHistory && user ? (
     <div className="wrapper my-12 flex-grow">
-      <div className="contain flex-col gap-8 flex-grow">
-        <div className="bg-bgSecondary flex items-center px-5 py-4 rounded-lg">
-          <div className="flex items-center min-w-[300px] gap-4">
-            <div className="bg-primary w-[80px] border-primary overflow-hidden border-t-[10px] border-r-[10px] border-l-[10px] border-b-[10px] aspect-square rounded-full grid place-items-center">
+      <div className="contain flex-col gap-8">
+        <div className="bg-bgSecondary flex flex-col md:flex-row md:items-center px-5 py-4 rounded-lg gap-y-2">
+          <div className="flex items-center xs:min-w-[300px] gap-4">
+            <div className="bg-primary min-w-[64px] w-[64px] xs:w-[80px] border-primary overflow-hidden border-[6.5px] xs:border-[10px] aspect-square rounded-full grid place-items-center">
               <FontAwesomeIcon
                 icon={faUser}
-                className="text-bgSecondary text-6xl translate-y-1"
+                className="text-bgSecondary text-5xl xs:text-6xl translate-y-1"
               />
             </div>
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1 overflow-hidden text-[30px] xs:text-[34px]">
               <h2
                 style={{
-                  fontSize: `min(min(${17 / user.username.length}vw , ${
-                    260 / user.username.length
-                  }px), 34px)`,
+                  fontSize: `min(${260 / user.username.length}px, 1em)`,
                 }}
-                className="text-tertiary leading-[1]"
+                className="text-tertiary leading-[1] overflow-hidden text-ellipsis"
               >
                 {user.username}
               </h2>
 
-              <p className="text-primary text-xs">Joined 4 Jun 3030</p>
+              <p className="text-primary text-xs">Joined {user.createdAt}</p>
             </div>
           </div>
 
           <div className="w-2.5 rounded-xl bg-bgColor self-stretch"></div>
 
-          <div className="flex w-full px-5">
-            <div className="w-full ">
+          <div className="flex flex-wrap md:flex-nowrap md:flex-col mod:flex-row w-full px-1.5 md:px-5 gap-y-2 gap-x-8 md:gap-x-0">
+            <div className="min-w-max flex-grow">
               <h2 className="text-primary text-[14px] -mb-1">tests started</h2>
               <p className="text-tertiary text-3xl">
                 {allTimeStats["tests started"]}
               </p>
             </div>
-            <div className="w-full ">
+            <div className="min-w-max flex-grow">
               <h2 className="text-primary text-[14px] -mb-1">
                 tests completed
               </h2>
@@ -97,7 +95,7 @@ const Account = () => {
                 {allTimeStats["tests completed"]}
               </p>
             </div>
-            <div className="w-full ">
+            <div className="min-w-max flex-grow">
               <h2 className="text-primary text-[14px] -mb-1">time typing</h2>
               <p className="text-tertiary text-3xl">
                 {formatTime(allTimeStats["time typing"])}

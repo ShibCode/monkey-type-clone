@@ -30,7 +30,7 @@ const Section = ({ heading, settings }) => {
         }`}
       >
         <div className="px-[25px] overflow-hidden">
-          <div className="flex flex-col gap-5 py-4">
+          <div className="flex flex-col gap-8 sm:gap-5 py-4">
             {Object.keys(settings).map((settingName, i) => {
               const setting = { ...settings[settingName], title: settingName };
               return <Setting key={i} {...setting} />;

@@ -22,16 +22,16 @@ const Header = () => {
   return (
     <div className="wrapper relative z-20">
       <div className="contain items-end h-[60px]">
-        <div className="flex w-full items-end gap-6">
+        <div className="flex w-full items-end gap-4 xs:gap-5 sm:gap-6">
           <Link
             href="/"
-            className="flex items-end gap-2 cursor-pointer"
+            className="flex items-end sm:gap-2 cursor-pointer"
             tabIndex={-1}
           >
             <Logo testStarted={testStarted} />
             <div className="-mb-1 relative">
               <div
-                className={`text-primary transition-all duration-150 text-[10px] -mb-3 ${
+                className={`text-primary transition-all duration-150 text-[10px] -mb-3 hidden sm:block ${
                   testStarted ? "opacity-0" : "opacity-100"
                 }`}
               >
@@ -39,7 +39,7 @@ const Header = () => {
               </div>
 
               <div
-                className={`text-3xl transition-all duration-150 ${
+                className={`text-3xl transition-all duration-150 hidden sm:block ${
                   testStarted ? "text-primary" : "text-tertiary"
                 }`}
               >
@@ -47,7 +47,7 @@ const Header = () => {
               </div>
 
               <div
-                className={`absolute text-tertiary text-xs right-0 -bottom-[11px] transition-all duration-150 ${
+                className={`absolute text-tertiary text-xs right-0 -bottom-[11px] transition-all duration-150 hidden sm:block ${
                   testStarted ? "opacity-0" : "opacity-100"
                 }`}
               >
@@ -56,7 +56,7 @@ const Header = () => {
             </div>
           </Link>
           <div
-            className={`flex gap-6 items-end transition-all duration-150 ${
+            className={`flex gap-4 xs:gap-5 sm:gap-6 items-end transition-all duration-150 ${
               testStarted ? "opacity-0" : "opacity-100"
             }`}
           >
@@ -88,7 +88,7 @@ const Header = () => {
         </div>
 
         <div
-          className={`flex items-center gap-6 transition-all duration-150 ${
+          className={`flex items-center gap-4 xs:gap-5 sm:gap-6 transition-all duration-150 ${
             testStarted ? "opacity-0" : "opacity-100"
           }`}
         >
@@ -100,7 +100,9 @@ const Header = () => {
                 className="h-[20px] flex items-center gap-1 text-primary hover:text-tertiary transition-colors duration-75"
               >
                 <FontAwesomeIcon icon={faUser} width={20} height={20} />
-                <span className="text-sm w-max">{user.username}</span>
+                <span className="hidden md:inline text-sm">
+                  {user.username}
+                </span>
               </Link>
               <button
                 tabIndex={-1}

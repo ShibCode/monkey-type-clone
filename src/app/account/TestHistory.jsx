@@ -66,10 +66,10 @@ const TestHistory = ({ testHistory, setTestHistory }) => {
   }, [sortingCriteria]);
 
   return (
-    <div className="flex flex-col">
-      <table>
+    <div className="flex flex-col overflow-x-auto">
+      <table className="w-full">
         <thead>
-          <tr className="text-primary text-xs">
+          <tr className="text-primary text-xs whitespace-nowrap">
             {tableHeadings.map((heading, index) => (
               <td
                 key={index}
@@ -79,8 +79,8 @@ const TestHistory = ({ testHistory, setTestHistory }) => {
                   updateSort(heading);
                 }}
                 className={`p-2 select-none
-          ${index === 0 && "pl-4"} 
-          ${index + 1 === tableHeadings.length && "pr-4"}
+          ${index === 0 && "pl-2 sm:pl-4"} 
+          ${index + 1 === tableHeadings.length && "pr-2 sm:pr-4"}
           ${
             heading.isSortable &&
             "hover:bg-bgSecondary duration-150 cursor-pointer"
@@ -106,7 +106,7 @@ const TestHistory = ({ testHistory, setTestHistory }) => {
             ))}
           </tr>
         </thead>
-        <tbody>
+        <tbody className="text-sm sm:text-base">
           {testHistory.tests.map((test, index) => (
             <TestHistoryItem key={index} test={test} index={index} />
           ))}
@@ -138,8 +138,8 @@ const TestHistoryItem = ({ test, index }) => {
         index % 2 === 0 ? "bg-bgSecondary" : "bg-transparent"
       }`}
     >
-      <td className="p-2 pl-4">
-        {test.isPersonalBest && <Crown className="w-5" />}
+      <td className="p-2 pl-2 sm:pl-4">
+        {test.isPersonalBest && <Crown className="w-4 sm:w-5" />}
       </td>
       <td className="p-2">{test.wpm.toFixed(2)}</td>
       <td className="p-2">{test.raw}</td>
@@ -157,7 +157,7 @@ const TestHistoryItem = ({ test, index }) => {
           </div>
         </div>
       </td>
-      <td className="p-2 pr-4">
+      <td className="p-2 p-2 sm:pr-4">
         <div>{test.date}</div>
         <div>{test.time}</div>
       </td>

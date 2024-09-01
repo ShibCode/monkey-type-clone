@@ -10,10 +10,27 @@ export async function GET(req) {
 
     const user = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
+    const timestamp = user.iat * 1000;
+
+    // Create a new Date object
+    const date = new Date(timestamp);
+
+    // Format the date
+    const formattedDate = date.toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+
     return NextResponse.json({
       success: true,
       message: "Authenticated",
-      user: { _id: user._id, username: user.username, email: user.email },
+      user: {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        createdAt: formattedDate,
+      },
     });
   } catch (error) {
     return NextResponse.json({
