@@ -13,7 +13,12 @@ const userSchema = new mongoose.Schema(
 userSchema.methods.generateToken = async function () {
   try {
     return jwt.sign(
-      { _id: this._id, username: this.username, email: this.email },
+      {
+        _id: this._id,
+        username: this.username,
+        email: this.email,
+        createdAt: this.createdAt,
+      },
       process.env.JWT_SECRET_KEY
     );
   } catch (error) {

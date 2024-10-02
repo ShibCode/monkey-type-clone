@@ -10,10 +10,8 @@ export async function GET(req) {
 
     const user = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
-    const timestamp = user.iat * 1000;
-
     // Create a new Date object
-    const date = new Date(timestamp);
+    const date = new Date(user.createdAt);
 
     // Format the date
     const formattedDate = date.toLocaleDateString("en-GB", {
