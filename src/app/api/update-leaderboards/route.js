@@ -66,24 +66,24 @@ export async function GET() {
           const collection = db.collection(mode.text);
           const top100 = await getTop100(mode.mode);
 
-          // const session = await mongoose.startSession();
+          const session = await mongoose.startSession();
 
           const data = {
             mode: mode.text,
           };
 
           try {
-            // session.startTransaction();
+            session.startTransaction();
 
-            await collection.deleteMany({});
-            data.insert = await collection.insertMany(top100);
+            await collection.deleteMany({}, { session });
+            data.insert = await collection.insertMany(top100, { session });
             data.data = top100;
 
-            // await session.commitTransaction();
+            await session.commitTransaction();
           } catch (error) {
-            // await session.abortTransaction();
+            await session.abortTransaction();
           } finally {
-            // session.endSession();
+            session.endSession();
           }
 
           resolve(data);

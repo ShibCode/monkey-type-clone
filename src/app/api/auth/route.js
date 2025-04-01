@@ -2,6 +2,8 @@ import dbConnect from "@/utils/dbConn";
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 
+export const revalidate = 0;
+
 export async function GET(req) {
   try {
     await dbConnect();
