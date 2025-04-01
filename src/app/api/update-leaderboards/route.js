@@ -1,5 +1,6 @@
 import { Test } from "@/model/test";
 import dbConnect from "@/utils/dbConn";
+import mongoose from "mongoose";
 import { NextResponse } from "next/server";
 
 const modes = [
@@ -53,20 +54,31 @@ const getTop100 = async (mode) => {
 
 export async function GET() {
   try {
-    const { connection: db } = await dbConnect();
+    const client = await dbConnect();
 
-    for (let mode of modes) {
-      const updateDb = async () => {
-        const collection = db.collection(mode.text);
-        const top100 = await getTop100(mode.mode);
-        await collection.bulkWrite([
-          { deleteMany: { filter: {} } }, // Delete all documents
-          { insertMany: { documents: top100 } }, // Insert new documents
-        ]);
-      };
+    const db = client.connection;
 
-      updateDb();
-    }
+    const updatePromises = modes.map(async (mode) => {
+      const collection = db.collection(mode.text);
+      const top100 = await getTop100(mode.mode);
+
+      const session = await mongoose.startSession();
+
+      try {
+        session.startTransaction();
+
+        await collection.deleteMany({}, { session });
+        await collection.insertMany(top100, { session });
+
+        await session.commitTransaction();
+      } catch (error) {
+        await session.abortTransaction();
+      } finally {
+        session.endSession();
+      }
+    });
+
+    await Promise.all(updatePromises);
 
     return NextResponse.json({ message: "Leaderboards have been updated" });
   } catch (e) {
