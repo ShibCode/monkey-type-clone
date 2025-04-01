@@ -14,49 +14,49 @@ const modes = [
   { text: "Time 120", mode: { name: "time", category: 120 } },
 ];
 
-const getTop100 = async (mode) => {
-  return await Test.aggregate([
-    {
-      $match: {
-        "mode.name": mode.name,
-        "mode.category": mode.category,
-      },
-    },
-    {
-      $project: {
-        timeTaken: 0,
-        isPersonalBest: 0,
-        mode: 0,
-        language: 0,
-        __v: 0,
-        _id: 0,
-      },
-    },
-    { $sort: { wpm: -1 } },
-    { $group: { _id: "$userId", fastestTest: { $first: "$$ROOT" } } },
-    { $replaceRoot: { newRoot: "$fastestTest" } },
-    { $sort: { wpm: -1 } },
-    { $limit: 100 },
-    {
-      $lookup: {
-        from: "users",
-        localField: "userId",
-        foreignField: "_id",
-        as: "user",
-        pipeline: [{ $project: { _id: 0, username: 1 } }],
-      },
-    },
-    { $unwind: "$user" },
-    { $set: { username: "$user.username" } },
-    { $unset: ["user"] },
-  ]);
-};
-
 export async function GET() {
   try {
     const client = await dbConnect();
 
     const db = client.connection;
+
+    const getTop100 = async (mode) => {
+      return await Test.aggregate([
+        {
+          $match: {
+            "mode.name": mode.name,
+            "mode.category": mode.category,
+          },
+        },
+        {
+          $project: {
+            timeTaken: 0,
+            isPersonalBest: 0,
+            mode: 0,
+            language: 0,
+            __v: 0,
+            _id: 0,
+          },
+        },
+        { $sort: { wpm: -1 } },
+        { $group: { _id: "$userId", fastestTest: { $first: "$$ROOT" } } },
+        { $replaceRoot: { newRoot: "$fastestTest" } },
+        { $sort: { wpm: -1 } },
+        { $limit: 100 },
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            as: "user",
+            pipeline: [{ $project: { _id: 0, username: 1 } }],
+          },
+        },
+        { $unwind: "$user" },
+        { $set: { username: "$user.username" } },
+        { $unset: ["user"] },
+      ]);
+    };
 
     const updatePromises = modes.map(
       (mode) =>
