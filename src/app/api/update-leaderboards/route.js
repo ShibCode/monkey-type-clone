@@ -66,7 +66,7 @@ export async function GET() {
       updateDb();
     }
 
-    return NextResponse.json({ message: "success" });
+    return NextResponse.json({ message: "Leaderboards have been updated" });
   } catch (e) {
     console.log(e);
     return NextResponse.json({ error: "Something went wrong" });
