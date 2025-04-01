@@ -66,13 +66,16 @@ export async function GET() {
 
           const session = await mongoose.startSession();
 
-          let insert = null;
+          const data = {
+            mode: mode.text,
+          };
 
           try {
             session.startTransaction();
 
             await collection.deleteMany({}, { session });
-            insert = await collection.insertMany(top100, { session });
+            data.insert = await collection.insertMany(top100, { session });
+            data.data = top100;
 
             await session.commitTransaction();
           } catch (error) {
@@ -81,13 +84,17 @@ export async function GET() {
             session.endSession();
           }
 
-          resolve(insert);
+          resolve(data);
         })
     );
 
     const promises = await Promise.all(updatePromises);
+    const data = promises.reduce(
+      (acc, curr) => ({ ...acc, [curr.mode]: curr }),
+      {}
+    );
 
-    return NextResponse.json({ message: promises });
+    return NextResponse.json({ ...data });
   } catch (e) {
     console.log(e);
     return NextResponse.json({ error: "Something went wrong" });
