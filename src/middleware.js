@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 
 import { jwtVerify } from "jose";
 
+export const revalidate = 0;
+
 export async function middleware(req) {
   const pathname = new URL(req.url).pathname;
 
