@@ -1,182 +1,114 @@
-"use client";
-
-import { useState } from "react";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Input from "./Input";
-import Button from "./Button";
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
+import Button from "./Button";
 import { post } from "@/utils/post";
-import { useUser } from "@/context/User";
-import useUpdateEffect from "@/hooks/useUpdateEffect";
 import createToast from "@/utils/createToast";
+import { useUser } from "@/context/User";
 
-const usernameFormat = /^[a-zA-Z-_0-9]+$/;
-const passwordFormat = /(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])/;
-const emailFormat = /^[^\s@]+@[a-zA-Z-]+\.[a-zA-Z]{2,}$/;
+const schema = z
+  .object({
+    username: z
+      .string()
+      .max(16, "Username can not be more than 16 characters")
+      .regex(
+        /^[a-zA-Z-_0-9]+$/,
+        "Username cannot use special characters. Can include _ and -"
+      ),
+    email: z.string().email(),
+    verifyEmail: z.string(),
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters long")
+      .regex(
+        /(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])/,
+        "Password must contain at least one capital letter, number, and special character"
+      ),
+    verifyPassword: z.string(),
+  })
 
-const SignUp = () => {
-  const [userInfo, setUserInfo] = useState({
-    username: "",
-    email: "",
-    verifyEmail: "",
-    password: "",
-    verifyPassword: "",
+  .refine((data) => data.email === data.verifyEmail, {
+    message: "Emails do not match",
+    path: ["verifyEmail"],
+  })
+  .refine((data) => data.password === data.verifyPassword, {
+    message: "Passwords do not match",
+    path: ["verifyPassword"],
   });
 
-  const [isValidated, setIsValidated] = useState(false);
-  const [isFetching, setIsFetching] = useState(false);
+const SignUp = () => {
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { isSubmitting, errors, isValid },
+  } = useForm({ resolver: zodResolver(schema), mode: "onChange" });
 
   const { login } = useUser();
 
-  const handleChange = (e) => {
-    const newUserInfo = { ...userInfo, [e.target.name]: e.target.value };
+  const { username, email, verifyEmail, password, verifyPassword } = watch();
 
-    setUserInfo(newUserInfo);
-
-    setIsValidated(() => {
-      const { username, email, verifyEmail, password, verifyPassword } =
-        newUserInfo;
-
-      // if any fields are empty
-      if (!username || !email || !password || !verifyEmail || !verifyPassword)
-        return false;
-
-      if (email !== verifyEmail || password !== verifyPassword) return false; // if email or password do not match
-      if (!usernameFormat.test(username) || username.length > 16) return false; // username validation
-      if (password.length < 8 || !passwordFormat.test(password)) return false; // password validation
-      if (!emailFormat.test(email)) return false; // email validation
-
-      return true;
-    });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!isValidated) return;
-
-    setIsFetching(true);
-    const res = await post("/register", userInfo);
-    setIsFetching(false);
+  const onSubmit = async (values) => {
+    const res = await post("/register", values);
 
     if (res.success) {
       createToast(res.message, "success");
       login(res.user, res.token);
     } else createToast(res.message, "error");
-
-    setUserInfo({
-      username: "",
-      email: "",
-      verifyEmail: "",
-      password: "",
-      verifyPassword: "",
-    });
   };
 
   return (
     <form
       className="flex flex-col gap-2 w-full max-w-[250px]"
-      onSubmit={handleSubmit}
+      onSubmit={handleSubmit(onSubmit)}
     >
       <p className="text-tertiary">register</p>
-      <UsernameInput username={userInfo.username} handleChange={handleChange} />
+
       <Input
+        {...register("username")}
+        placeholder="username"
+        error={username && errors.username?.message}
+        success={username && !errors.username}
+      />
+      <Input
+        {...register("email")}
         type="email"
-        name="email"
         placeholder="email"
-        value={userInfo.email}
-        onChange={handleChange}
-        notValid={!emailFormat.test(userInfo.email)}
+        error={email && errors.email?.message}
+        success={email && !errors.email}
       />
       <Input
+        {...register("verifyEmail")}
         type="email"
-        name="verifyEmail"
         placeholder="verify email"
-        value={userInfo.verifyEmail}
-        onChange={handleChange}
-        notValid={userInfo.email !== userInfo.verifyEmail}
+        error={verifyEmail && errors.verifyEmail?.message}
+        success={verifyEmail && !errors.verifyEmail}
       />
-      <PasswordInput password={userInfo.password} handleChange={handleChange} />
       <Input
+        {...register("password")}
         type="password"
-        name="verifyPassword"
+        placeholder="password"
+        error={password && errors.password?.message}
+        success={password && !errors.password && "Password is good!"}
+      />
+      <Input
+        {...register("verifyPassword")}
+        type="password"
         placeholder="verify password"
-        value={userInfo.verifyPassword}
-        onChange={handleChange}
-        notValid={userInfo.password !== userInfo.verifyPassword}
+        error={verifyPassword && errors.verifyPassword?.message}
+        success={verifyPassword && !errors.verifyPassword}
       />
       <Button
         text="Sign Up"
         icon={faUserPlus}
-        isLoading={isFetching}
-        disabled={!isValidated}
+        isLoading={isSubmitting}
+        disabled={!isValid}
       />
     </form>
   );
 };
 
 export default SignUp;
-
-const UsernameInput = ({ username, handleChange }) => {
-  const [usernameExists, setUsernameExists] = useState("LOADING"); // LOADING, true, false
-
-  const checkUsernameAvailability = async () => {
-    const response = await post("/check-username-exists", username);
-    if (response.success) {
-      if (response.exists) setUsernameExists(true);
-      else setUsernameExists(false);
-    }
-  };
-
-  useUpdateEffect(() => {
-    setUsernameExists("LOADING");
-    const id = setTimeout(checkUsernameAvailability, 200);
-
-    return () => clearTimeout(id);
-  }, [username]);
-
-  let tooltip = "";
-  let notValid = usernameExists;
-
-  if (!usernameFormat.test(username) || username.length > 16) {
-    tooltip = `Username invalid! Name cannot use special characters or contain more than 16 characters. Can include _ and - (${username})`;
-    notValid = true;
-  } else if (usernameExists === true) tooltip = "Username unavailable";
-  else if (usernameExists === false) tooltip = "Username available";
-
-  return (
-    <Input
-      name="username"
-      placeholder="username"
-      value={username}
-      onChange={handleChange}
-      notValid={notValid}
-      tooltip={tooltip}
-    />
-  );
-};
-
-const PasswordInput = ({ password, handleChange }) => {
-  let notValid = "";
-  let tooltip = "";
-
-  if (password.length < 8) {
-    tooltip = "Password must be at least 8 characters long";
-    notValid = true;
-  } else if (!passwordFormat.test(password)) {
-    tooltip =
-      "Password must contain at least one capital letter, number, and special character";
-    notValid = true;
-  } else tooltip = "Password is good";
-
-  return (
-    <Input
-      type="password"
-      name="password"
-      placeholder="password"
-      value={password}
-      onChange={handleChange}
-      notValid={notValid}
-      tooltip={tooltip}
-    />
-  );
-};

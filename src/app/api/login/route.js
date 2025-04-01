@@ -4,44 +4,59 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 
 const invalidCredentials = () => {
-  return NextResponse.json({
-    success: false,
-    message: "Invalid credentials!",
-  });
+  return NextResponse.json(
+    {
+      success: false,
+      message: "Invalid credentials!",
+    },
+    { status: 401 }
+  );
 };
 
-export async function POST(req, res) {
-  await dbConnect();
-  const { email, password } = await req.json();
-  const existingUser = await User.findOne({ email });
+export async function POST(req) {
+  try {
+    await dbConnect();
 
-  if (!existingUser) return invalidCredentials();
+    const { email, password } = await req.json();
 
-  const isSamePass = await bcrypt.compare(password, existingUser.password);
+    const existingUser = await User.findOne({ email });
 
-  if (!isSamePass) return invalidCredentials();
+    if (!existingUser) return invalidCredentials();
 
-  const token = await existingUser.generateToken();
+    const isSamePass = await bcrypt.compare(password, existingUser.password);
 
-  // Create a new Date object
-  const date = new Date(existingUser.createdAt);
+    if (!isSamePass) return invalidCredentials();
 
-  // Format the date
-  const formattedDate = date.toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
+    const token = await existingUser.generateToken();
 
-  return NextResponse.json({
-    message: "Logged in",
-    success: true,
-    user: {
-      _id: existingUser._id,
-      username: existingUser.username,
-      email,
-      createdAt: formattedDate,
-    },
-    token,
-  });
+    // Create a new Date object
+    const date = new Date(existingUser.createdAt);
+
+    // Format the date
+    const formattedDate = date.toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+
+    return NextResponse.json({
+      message: "Logged in",
+      success: true,
+      user: {
+        _id: existingUser._id,
+        username: existingUser.username,
+        email,
+        createdAt: formattedDate,
+      },
+      token,
+    });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Something went wrong!",
+      },
+      { status: 500 }
+    );
+  }
 }

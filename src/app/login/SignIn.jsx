@@ -1,65 +1,48 @@
-"use client";
-
-import { useState } from "react";
-import Input from "./Input";
-import Button from "./Button";
+import React, { forwardRef } from "react";
 import { faRightToBracket } from "@fortawesome/free-solid-svg-icons";
+import Button from "./Button";
+import { useForm } from "react-hook-form";
 import { post } from "@/utils/post";
 import { useUser } from "@/context/User";
 import createToast from "@/utils/createToast";
+import Input from "./Input";
 
-const SignIn = () => {
-  const [userInfo, setUserInfo] = useState({
-    email: "",
-    password: "",
-  });
-  const [isFetching, setIsFetching] = useState(false);
+const Login = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = useForm();
 
   const { login } = useUser();
 
-  const handleInput = (e) => {
-    setUserInfo((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
+  const onSubmit = async (values) => {
+    const { email, password } = values;
+    const response = await post("/login", { email, password });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    setIsFetching(true);
-    const res = await post("/login", userInfo);
-    setIsFetching(false);
-
-    if (res.success) {
-      createToast(res.message, "success");
-      login(res.user, res.token);
-    } else createToast(res.message, "error");
-
-    setUserInfo({ email: "", password: "" });
+    if (response.success) {
+      createToast(response.message, "success");
+      login(response.user, response.token);
+    } else createToast(response.message, "error");
   };
 
   return (
     <form
+      onSubmit={handleSubmit(onSubmit)}
       className="flex flex-col gap-2 w-full max-w-[250px]"
-      onSubmit={handleSubmit}
     >
       <p className="text-tertiary">login</p>
+
+      <Input {...register("email")} type="email" required placeholder="email" />
       <Input
-        name="email"
-        placeholder="email"
-        value={userInfo.email}
-        onChange={handleInput}
-        required
-      />
-      <Input
+        {...register("password")}
         type="password"
-        name="password"
-        placeholder="password"
-        value={userInfo.password}
-        onChange={handleInput}
         required
+        placeholder="password"
       />
-      <Button text="Sign In" icon={faRightToBracket} isLoading={isFetching} />
+      <Button text="Sign In" icon={faRightToBracket} isLoading={isSubmitting} />
     </form>
   );
 };
 
-export default SignIn;
+export default Login;

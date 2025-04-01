@@ -1,56 +1,49 @@
 import Spinner from "@/components/Spinner";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
+import React, { forwardRef } from "react";
 
-const Input = ({
-  type = "text",
-  placeholder,
-  onChange,
-  name,
-  value,
-  notValid = null,
-  tooltip = null,
-  required = false,
-}) => {
-  const icons = { valid: faCheck, invalid: faXmark };
-
-  if (notValid === undefined) return;
-
+const Input = (
+  { success, error, loading, tooltip, className, ...props },
+  ref
+) => {
   return (
     <div className="flex h-[33px] relative">
       <input
-        type={type}
-        name={name}
-        placeholder={placeholder}
-        onChange={onChange}
-        required={required}
-        value={value}
-        className="text-tertiary caret-secondary w-full h-full pl-2 rounded-md placeholder:text-primary outline-none bg-bgSecondary focus-visible:outline-1 focus-visible:outline-tertiary focus-visible:outline"
+        ref={ref}
+        className={`text-tertiary caret-secondary w-full h-full pl-2 rounded-md placeholder:text-primary outline-none bg-bgSecondary focus-visible:outline-1 focus-visible:outline-tertiary focus-visible:outline pr-[33px] ${className}`}
+        {...props}
       />
 
-      {notValid !== null && (
+      {loading && (
+        <div className="absolute right-0 flex items-center justify-center size-[33px] bg-bgSecondary">
+          <Spinner className="!size-[19.8px] !m-0" />
+        </div>
+      )}
+
+      {success && !loading && (
         <div
-          tooltip={tooltip && value && tooltip}
+          tooltip={success.toString()}
           className={`!absolute right-0 flex items-center justify-center size-[33px] bg-bgSecondary ${
-            tooltip && value ? "hover-tooltip" : ""
+            typeof success === "string" && "hover-tooltip"
           }`}
         >
-          {value &&
-            (notValid === "LOADING" ? (
-              <Spinner className="!size-[19.8px] !m-0" />
-            ) : (
-              <FontAwesomeIcon
-                icon={notValid ? icons.invalid : icons.valid}
-                className={`h-[60%] ${
-                  notValid ? "text-error" : "text-secondary"
-                }`}
-              />
-            ))}
+          <FontAwesomeIcon icon={faCheck} className="h-[60%] text-secondary" />
+        </div>
+      )}
+
+      {error && !loading && (
+        <div
+          tooltip={error.toString()}
+          className={`!absolute right-0 flex items-center justify-center size-[33px] bg-bgSecondary ${
+            typeof error === "string" && "hover-tooltip"
+          }`}
+        >
+          <FontAwesomeIcon icon={faXmark} className="h-[60%] text-error" />
         </div>
       )}
     </div>
   );
 };
 
-export default Input;
+export default forwardRef(Input);
