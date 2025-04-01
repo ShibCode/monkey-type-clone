@@ -58,29 +58,34 @@ export async function GET() {
 
     const db = client.connection;
 
-    const updatePromises = modes.map(async (mode) => {
-      const collection = db.collection(mode.text);
-      const top100 = await getTop100(mode.mode);
+    const updatePromises = modes.map(
+      (mode) =>
+        new Promise(async (resolve) => {
+          const collection = db.collection(mode.text);
+          const top100 = await getTop100(mode.mode);
 
-      const session = await mongoose.startSession();
+          const session = await mongoose.startSession();
 
-      try {
-        session.startTransaction();
+          try {
+            session.startTransaction();
 
-        console.log(top100);
+            await collection.deleteMany({}, { session });
+            await collection.insertMany(top100, { session });
 
-        await collection.deleteMany({}, { session });
-        await collection.insertMany(top100, { session });
+            await session.commitTransaction();
+          } catch (error) {
+            await session.abortTransaction();
+          } finally {
+            session.endSession();
+          }
 
-        await session.commitTransaction();
-      } catch (error) {
-        await session.abortTransaction();
-      } finally {
-        session.endSession();
-      }
-    });
+          resolve();
+        })
+    );
 
     await Promise.all(updatePromises);
+
+    console.log(updatePromises);
 
     return NextResponse.json({ message: "Leaderboards have been updated" });
   } catch (e) {
