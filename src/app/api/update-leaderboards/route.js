@@ -67,6 +67,8 @@ export async function GET() {
       try {
         session.startTransaction();
 
+        console.log(top100);
+
         await collection.deleteMany({}, { session });
         await collection.insertMany(top100, { session });
 
