@@ -66,11 +66,13 @@ export async function GET() {
 
           const session = await mongoose.startSession();
 
+          let insert = null;
+
           try {
             session.startTransaction();
 
             await collection.deleteMany({}, { session });
-            await collection.insertMany(top100, { session });
+            insert = await collection.insertMany(top100, { session });
 
             await session.commitTransaction();
           } catch (error) {
@@ -79,15 +81,13 @@ export async function GET() {
             session.endSession();
           }
 
-          resolve();
+          resolve(insert);
         })
     );
 
-    await Promise.all(updatePromises);
+    const promises = await Promise.all(updatePromises);
 
-    console.log(updatePromises);
-
-    return NextResponse.json({ message: "Leaderboards have been updated" });
+    return NextResponse.json({ message: promises });
   } catch (e) {
     console.log(e);
     return NextResponse.json({ error: "Something went wrong" });
