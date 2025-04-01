@@ -59,8 +59,10 @@ export async function GET() {
       const updateDb = async () => {
         const collection = db.collection(mode.text);
         const top100 = await getTop100(mode.mode);
-        await collection.deleteMany({});
-        await collection.insertMany(top100);
+        await collection.bulkWrite([
+          { deleteMany: { filter: {} } }, // Delete all documents
+          { insertMany: { documents: top100 } }, // Insert new documents
+        ]);
       };
 
       updateDb();
