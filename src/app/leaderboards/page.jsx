@@ -27,24 +27,36 @@ const Leaderboards = () => {
 
   const { user } = useUser();
 
-  const fetchData = async () => {
-    const response = await post("/get-leaderboards-data", { mode: activeMode });
+  const fetchData = async (signal) => {
+    try {
+      const response = await post(
+        "/get-leaderboards-data",
+        { mode: activeMode },
+        { signal }
+      );
 
-    if (response.success) setLeaderboards(response.leaderboardsData);
-    // else setActiveMode(MODES[0]);
-
-    setIsFetching(false);
+      if (response.success) setLeaderboards(response.leaderboardsData);
+      else setActiveMode(MODES[0]);
+      setIsFetching(false);
+    } catch (e) {
+      if (e.name !== "AbortError") setIsFetching(false);
+    }
   };
 
   const changeActiveMode = (mode) => {
+    if (mode === activeMode) return;
     setIsFetching(true);
     setActiveMode(mode);
   };
 
   useEffect(() => {
-    const id = setTimeout(fetchData, 500);
+    const controller = new AbortController();
+    const signal = controller.signal;
+
+    fetchData(signal);
+
     return () => {
-      clearInterval(id);
+      controller.abort();
     };
   }, [activeMode]);
 
