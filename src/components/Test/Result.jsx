@@ -141,7 +141,7 @@ const Result = ({
       userId: user._id,
       testData: { ...testData, language },
     });
-    createToast(res.message, res.success ? "success" : "error");
+    // createToast(res.message, res.success ? "success" : "error");
     return res;
   }
 
