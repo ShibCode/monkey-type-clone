@@ -9,6 +9,8 @@ export async function POST(req, res) {
 
     const { userId, testData } = await req.json();
 
+    console.log(testData);
+
     const isCorrect =
       Math.abs(
         testData.correct - testData.wpm * 5 * (testData.timeTaken / 60)

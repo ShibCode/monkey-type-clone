@@ -1,5 +1,3 @@
-import getDate from "@/utils/getDate";
-import getTime from "@/utils/getTime";
 import mongoose from "mongoose";
 
 const testSchema = new mongoose.Schema(
@@ -58,16 +56,6 @@ const testSchema = new mongoose.Schema(
     isPersonalBest: {
       type: Boolean,
       required: true,
-    },
-    date: {
-      type: String,
-      required: true,
-      default: getDate,
-    },
-    time: {
-      type: String,
-      required: true,
-      default: getTime,
     },
   },
   {

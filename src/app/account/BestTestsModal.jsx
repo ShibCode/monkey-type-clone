@@ -1,5 +1,6 @@
 import React from "react";
 import Overlay from "@/components/Overlay";
+import dayjs from "dayjs";
 
 const BestTestsModal = ({ isActive, setIsActive, tests, modeName }) => {
   return (
@@ -22,7 +23,7 @@ const BestTestsModal = ({ isActive, setIsActive, tests, modeName }) => {
             </thead>
             <tbody>
               {tests
-                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
                 .map((test, index) => (
                   <TableRow key={index} {...test} index={index} />
                 ))}
@@ -49,9 +50,12 @@ const TableRow = (test) => {
       <td className="p-2">{test.accuracy}%</td>
       <td className="p-2">{test.language}</td>
       <td className="p-2">
-        {" "}
-        <div className="leading-[125%]">{test.date}</div>
-        <div className="opacity-50 leading-[125%]">{test.time}</div>
+        <div className="leading-[125%]">
+          {dayjs(test.createdAt).format("DD MMM YYYY")}
+        </div>
+        <div className="opacity-50 leading-[125%]">
+          {dayjs(test.createdAt).format("HH:mm")}
+        </div>
       </td>
     </tr>
   );

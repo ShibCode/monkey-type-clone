@@ -2,6 +2,7 @@ import { faEllipsisVertical } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
 import BestTestsModal from "./BestTestsModal";
+import dayjs from "dayjs";
 
 const categories = {
   time: ["15", "30", "60", "120"],
@@ -63,7 +64,9 @@ const BestTest = ({ test, mode }) => {
           <p className="text-tertiary">{test.wpm} wpm</p>
           <p className="text-tertiary">{test.raw} raw</p>
           <p className="text-tertiary">{test.accuracy} acc</p>
-          <p className="text-primary">{test.date}</p>
+          <p className="text-primary">
+            {dayjs(test.createdAt).format("DD MMM YYYY")}
+          </p>
         </div>
       )}
 

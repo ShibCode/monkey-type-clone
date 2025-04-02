@@ -61,20 +61,15 @@ export async function POST(req, res) {
 
     const token = await createdUser.generateToken();
 
-    // Create a new Date object
-    const date = new Date(createdUser.createdAt);
-
-    // Format the date
-    const formattedDate = date.toLocaleDateString("en-GB", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
-
     return NextResponse.json({
       message: "Account registered!",
       success: true,
-      user: { _id: createdUser._id, username, email, createdAt: formattedDate },
+      user: {
+        _id: createdUser._id,
+        username,
+        email,
+        createdAt: createdUser.createdAt,
+      },
       token,
     });
   } catch (e) {

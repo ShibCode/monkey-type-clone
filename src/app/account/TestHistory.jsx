@@ -10,6 +10,7 @@ import {
   faCaretDown,
   faEarthAmericas,
 } from "@fortawesome/free-solid-svg-icons";
+import dayjs from "dayjs";
 
 const TestHistory = ({ testHistory, setTestHistory }) => {
   const [sortingCriteria, setSortingCriteria] = useState({
@@ -157,9 +158,9 @@ const TestHistoryItem = ({ test, index }) => {
           </div>
         </div>
       </td>
-      <td className="p-2 p-2 sm:pr-4">
-        <div>{test.date}</div>
-        <div>{test.time}</div>
+      <td className="p-2 sm:pr-4">
+        <div>{dayjs(test.createdAt).format("DD MMM YYYY")}</div>
+        <div>{dayjs(test.createdAt).format("HH:mm")}</div>
       </td>
     </tr>
   );

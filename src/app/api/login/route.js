@@ -29,16 +29,6 @@ export async function POST(req) {
 
     const token = await existingUser.generateToken();
 
-    // Create a new Date object
-    const date = new Date(existingUser.createdAt);
-
-    // Format the date
-    const formattedDate = date.toLocaleDateString("en-GB", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
-
     return NextResponse.json({
       message: "Logged in",
       success: true,
@@ -46,7 +36,7 @@ export async function POST(req) {
         _id: existingUser._id,
         username: existingUser.username,
         email,
-        createdAt: formattedDate,
+        createdAt: existingUser.createdAt,
       },
       token,
     });

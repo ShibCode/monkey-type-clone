@@ -12,6 +12,7 @@ import TestHistory from "./TestHistory";
 import { post } from "@/utils/post";
 import Spinner from "@/components/Spinner";
 import { formatTime } from "@/utils/formatTime";
+import dayjs from "dayjs";
 
 const allTimeStatsLayout = [
   "tests started",
@@ -74,7 +75,9 @@ const Account = () => {
                 {user.username}
               </h2>
 
-              <p className="text-primary text-xs">Joined {user.createdAt}</p>
+              <p className="text-primary text-xs">
+                Joined {dayjs(user.createdAt).format("D MMM YYYY")}
+              </p>
             </div>
           </div>
 

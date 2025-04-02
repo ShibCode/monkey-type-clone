@@ -76,7 +76,14 @@ export async function POST(req, res) {
           },
           { $replaceRoot: { newRoot: "$doc" } },
           {
-            $project: { wpm: 1, mode: 1, raw: 1, accuracy: 1, date: 1, _id: 0 },
+            $project: {
+              wpm: 1,
+              mode: 1,
+              raw: 1,
+              accuracy: 1,
+              createdAt: 1,
+              _id: 0,
+            },
           },
         ]).then((result) => {
           resolve(result);
@@ -109,7 +116,7 @@ export async function POST(req, res) {
               language: 1,
               raw: 1,
               accuracy: 1,
-              date: 1,
+              createdAt: 1,
               _id: 0,
             },
           },

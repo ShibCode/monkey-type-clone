@@ -8,6 +8,7 @@ import { faCrown } from "@fortawesome/free-solid-svg-icons";
 import { post } from "@/utils/post";
 import { useUser } from "@/context/User";
 import Countdown from "./Countdown";
+import dayjs from "dayjs";
 
 const MODES = [
   "Words 10",
@@ -135,8 +136,8 @@ const Leaderboards = () => {
                         {test.missed}
                       </td>
                       <td className="p-2">
-                        <div>{test.date}</div>
-                        <div>{test.time}</div>
+                        <div>{dayjs(test.createdAt).format("DD MMM YYYY")}</div>
+                        <div>{dayjs(test.createdAt).format("HH:mm")}</div>
                       </td>
                     </tr>
                   ))
