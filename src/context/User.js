@@ -37,7 +37,9 @@ const User = ({ children }) => {
   function login(user, token) {
     router.push("/");
     setUser(user);
-    nookies.set(null, "token", token);
+    nookies.set(null, "token", token, {
+      maxAge: 60 * 60 * 24 * 365 * 10, // 10 years
+    });
   }
 
   function logout() {

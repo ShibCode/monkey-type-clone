@@ -1,4 +1,5 @@
 import { Test } from "@/model/test";
+import { User } from "@/model/user";
 import dbConnect from "@/utils/dbConn";
 import { NextResponse } from "next/server";
 
@@ -8,7 +9,26 @@ export async function POST(req, res) {
 
     const start = new Date();
 
-    const { userId } = await req.json();
+    const { username } = await req.json();
+
+    if (!username)
+      return NextResponse.json(
+        { success: false, message: "Please provide a username" },
+        { status: 400 }
+      );
+
+    const user = await User.findOne({ username }).select("username createdAt");
+
+    if (!user)
+      return NextResponse.json(
+        {
+          success: false,
+          message: `account with username '${username}' does not exist`,
+        },
+        { status: 404 }
+      );
+
+    const userId = user._id.toString();
 
     const data = await Test.aggregate([
       {
@@ -70,8 +90,14 @@ export async function POST(req, res) {
     ]);
     console.log("Line Chart: ", Date.now() - start);
 
-    return NextResponse.json(data);
+    return NextResponse.json({ success: true, data });
   } catch (error) {
-    return NextResponse.json({ error: "Internal server error" });
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Internal server error",
+      },
+      { status: 500 }
+    );
   }
 }

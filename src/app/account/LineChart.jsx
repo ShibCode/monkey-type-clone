@@ -4,7 +4,7 @@ import { Chart as ChartJS } from "chart.js/auto";
 import getColor from "@/utils/getColor";
 import Spinner from "@/components/Spinner";
 
-const LineChart = ({ totalTests, chartData }) => {
+const LineChart = ({ totalTests, chartData, error }) => {
   const data = {
     labels: new Array(totalTests).fill(0).map((_, i) => i),
     datasets: [
@@ -111,13 +111,19 @@ const LineChart = ({ totalTests, chartData }) => {
     <>
       <div
         className={`absolute -inset-2 flex flex-col gap-2.5 justify-center items-center text-tertiary border border-primary text-lg bg-black bg-opacity-15 transition-all duration-300 ${
-          chartData
+          chartData && !error
             ? "opacity-0 pointer-events-none"
             : "opacity-100 pointer-events-auto"
         }`}
       >
-        <Spinner className="fill-tertiary" />
-        Fetching line chart data...
+        {error ? (
+          error
+        ) : (
+          <>
+            <Spinner className="fill-tertiary" />
+            Fetching line chart data...
+          </>
+        )}
       </div>
       <Scatter data={data} options={options} />;
     </>

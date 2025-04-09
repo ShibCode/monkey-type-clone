@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import BestTestsInMode from "./BestTestsInMode";
+import BestTestsInMode from "../BestTestsInMode";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
-import BarChart from "./BarChart";
-import LineChart from "./LineChart";
+import BarChart from "../BarChart";
+import LineChart from "../LineChart";
 import { useUser } from "@/context/User";
-import TestHistory from "./TestHistory";
+import TestHistory from "../TestHistory";
 import { post } from "@/utils/post";
 import Spinner from "@/components/Spinner";
 import { formatTime } from "@/utils/formatTime";
@@ -32,18 +32,19 @@ const allTimeStatsLayout = [
 const Account = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [user, setUser] = useState(null);
   const [lineChartData, setLineChartData] = useState(null);
   const [barChartData, setBarChartData] = useState(null);
   const [bestTests, setBestTests] = useState(null);
   const [allTimeStats, setAllTimeStats] = useState(null);
   const [testHistory, setTestHistory] = useState(null);
 
-  const { user } = useUser();
+  const { username } = useParams();
 
   useEffect(() => {
     const stats = false;
     if (!stats) {
-      post("/get-user-stats", { username: user.username }).then((response) => {
+      post("/get-user-stats", { username }).then((response) => {
         setLoading(false);
 
         if (!response.success) {
@@ -60,19 +61,18 @@ const Account = () => {
           isMoreTests: stats.isMoreTests,
           tests: stats.tests,
         });
+        setUser(stats.user);
       });
     }
 
-    post("/get-line-chart-data", { username: user.username }).then(
-      (response) => {
-        if (!response.success) {
-          setLineChartData("Failed to load data");
-          return;
-        }
-
-        setLineChartData(response.data);
+    post("/get-line-chart-data", { username }).then((response) => {
+      if (!response.success) {
+        setLineChartData("Failed to load data");
+        return;
       }
-    );
+
+      setLineChartData(response.data);
+    });
   }, []);
 
   if (error) {

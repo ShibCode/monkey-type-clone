@@ -1,4 +1,5 @@
 import { Test } from "@/model/test";
+import { User } from "@/model/user";
 import dbConnect from "@/utils/dbConn";
 import { NextResponse } from "next/server";
 
@@ -8,7 +9,26 @@ export async function POST(req, res) {
 
     const start = Date.now();
 
-    const { userId } = await req.json();
+    const { username } = await req.json();
+
+    if (!username)
+      return NextResponse.json(
+        { success: false, message: "Please provide a username" },
+        { status: 400 }
+      );
+
+    const user = await User.findOne({ username }).select("username createdAt");
+
+    if (!user)
+      return NextResponse.json(
+        {
+          success: false,
+          message: `account with username '${username}' does not exist`,
+        },
+        { status: 404 }
+      );
+
+    const userId = user._id.toString();
 
     function getAllTimeStats() {
       return new Promise((resolve) => {
@@ -212,13 +232,16 @@ export async function POST(req, res) {
       isMoreTests: result.allTimeStats["tests completed"] > 10,
       tests: result.last10,
       barChartData: result.barChartData,
+      user: user,
     };
 
     console.log("User Stats: ", Date.now() - start);
 
-    return NextResponse.json({ ...response });
+    return NextResponse.json({ success: true, ...response });
   } catch (error) {
-    console.log(error);
-    return NextResponse.json({ message: "Something went wrong" });
+    return NextResponse.json(
+      { success: false, message: "Something went wrong" },
+      { status: 500 }
+    );
   }
 }

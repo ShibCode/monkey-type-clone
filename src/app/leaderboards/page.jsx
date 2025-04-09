@@ -9,6 +9,7 @@ import { post } from "@/utils/post";
 import { useUser } from "@/context/User";
 import Countdown from "./Countdown";
 import dayjs from "dayjs";
+import Link from "next/link";
 
 const MODES = [
   "Words 10",
@@ -127,7 +128,14 @@ const Leaderboards = () => {
                           )}
                         </div>
                       </td>
-                      <td className="p-2">{test.username}</td>
+                      <td className="p-2">
+                        <Link
+                          href={`/account/${test.username}`}
+                          className="hover:underline"
+                        >
+                          {test.username}
+                        </Link>
+                      </td>
                       <td className="p-2">{test.wpm}</td>
                       <td className="p-2">{test.raw}</td>
                       <td className="p-2">{test.accuracy}%</td>

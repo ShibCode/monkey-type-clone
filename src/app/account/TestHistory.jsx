@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import useUpdateEffect from "@/hooks/useUpdateEffect";
 import Spinner from "@/components/Spinner";
 import Crown from "@/svg component/Crown";
-import { useUser } from "@/context/User";
 import { post } from "@/utils/post";
 import { tableHeadings } from "./data";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -12,15 +11,13 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import dayjs from "dayjs";
 
-const TestHistory = ({ testHistory, setTestHistory }) => {
+const TestHistory = ({ testHistory, setTestHistory, userId }) => {
   const [sortingCriteria, setSortingCriteria] = useState({
     field: "createdAt", // date
     order: "descending",
   });
 
   const [isLoadingTests, setIsLoadingTests] = useState(false);
-
-  const { user } = useUser();
 
   const updateSort = (heading) => {
     setSortingCriteria((prev) => {
@@ -39,7 +36,7 @@ const TestHistory = ({ testHistory, setTestHistory }) => {
     if (type === "LOAD") setIsLoadingTests(true);
 
     const data = await post("/get-tests", {
-      userId: user._id,
+      userId,
       sortingCriteria,
       totalCurrentTests: type === "LOAD" ? testHistory.tests.length : 0,
       type,
